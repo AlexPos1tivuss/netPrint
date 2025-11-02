@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/lib/protected-route";
 // Pages
 import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
+import CatalogPage from "@/pages/catalog-page";
 import ProductConfigPage from "@/pages/product-config-page";
 import UploadPhotosPage from "@/pages/upload-photos-page";
 import PhotographerSelectionPage from "@/pages/photographer-selection-page";
@@ -20,10 +21,11 @@ function Router() {
   return (
     <Switch>
       {/* Public routes */}
+      <Route path="/" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       
       {/* Protected routes */}
-      <ProtectedRoute path="/" component={HomePage} />
+      <ProtectedRoute path="/catalog" component={CatalogPage} />
       <ProtectedRoute path="/product/:type" component={ProductConfigPage} />
       <ProtectedRoute path="/upload" component={UploadPhotosPage} />
       <ProtectedRoute path="/photographer" component={PhotographerSelectionPage} />

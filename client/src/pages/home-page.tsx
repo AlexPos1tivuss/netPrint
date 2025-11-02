@@ -1,150 +1,187 @@
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link, useLocation } from "wouter";
-import { Camera, User, ShoppingCart, LogOut, Shield } from "lucide-react";
-import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
+import { Link } from "wouter";
+import { Camera, Package, Calendar, Users, Shield, Clock, Award, MapPin } from "lucide-react";
+import logoSvg from "@assets/netprint-logo.svg";
 import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
 import photosImage from "@assets/generated_images/Stack_glossy_photo_prints_3ba30edf.png";
 import calendarImage from "@assets/generated_images/Modern_wall_calendar_2025_6ee0d16e.png";
 
-const products = [
+const services = [
   {
-    type: 'photoalbum',
-    displayName: 'Фотоальбом',
-    description: 'Качественные фотоальбомы с твердой или мягкой обложкой',
+    icon: Package,
+    title: 'Фотоальбомы',
+    description: 'Качественные фотоальбомы с твердой или мягкой обложкой на любой вкус',
     image: photoalbumImage,
-    priceFrom: 1500,
   },
   {
-    type: 'photos',
-    displayName: 'Фотографии',
+    icon: Camera,
+    title: 'Фотографии',
     description: 'Печать фотографий различных форматов на глянцевой или матовой бумаге',
     image: photosImage,
-    priceFrom: 10,
   },
   {
-    type: 'calendar',
-    displayName: 'Календарь',
-    description: 'Настенные и настольные календари с вашими фотографиями',
+    icon: Calendar,
+    title: 'Календари',
+    description: 'Настенные и настольные календари с вашими любимыми фотографиями',
     image: calendarImage,
-    priceFrom: 800,
+  },
+];
+
+const features = [
+  {
+    icon: Award,
+    title: 'Высокое качество',
+    description: 'Профессиональное оборудование и материалы премиум-класса',
+  },
+  {
+    icon: Clock,
+    title: 'Быстрое выполнение',
+    description: 'Печать и доставка в кратчайшие сроки',
+  },
+  {
+    icon: Shield,
+    title: 'Гарантия качества',
+    description: '100% гарантия на все наши продукты и услуги',
+  },
+  {
+    icon: Users,
+    title: 'Профессиональные фотографы',
+    description: 'Услуги опытных фотографов для вашей фотосессии',
   },
 ];
 
 export default function HomePage() {
-  const { user, logoutMutation } = useAuth();
-  const [, navigate] = useLocation();
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    element?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={logoImage} alt="ФотоПринт" className="h-10" />
+          <div className="flex items-center gap-6">
+            <img src={logoSvg} alt="Netprint" className="h-8" />
+            <nav className="hidden md:flex gap-6">
+              <button 
+                onClick={() => scrollToSection('services')}
+                className="text-sm hover:text-primary transition-colors"
+                data-testid="nav-services"
+              >
+                Услуги
+              </button>
+              <button 
+                onClick={() => scrollToSection('features')}
+                className="text-sm hover:text-primary transition-colors"
+                data-testid="nav-features"
+              >
+                Преимущества
+              </button>
+              <button 
+                onClick={() => scrollToSection('faq')}
+                className="text-sm hover:text-primary transition-colors"
+                data-testid="nav-faq"
+              >
+                FAQ
+              </button>
+            </nav>
           </div>
           
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden sm:inline">
-              {user?.username}
-            </span>
-            {user?.isAdmin && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" data-testid="link-admin">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Админ-панель
-                </Button>
-              </Link>
-            )}
-            <Link href="/profile">
-              <Button variant="ghost" size="sm" data-testid="link-profile">
-                <User className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Профиль</span>
-              </Button>
-            </Link>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => logoutMutation.mutate()}
-              data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Выход</span>
+          <Link href="/auth">
+            <Button variant="default" data-testid="button-login">
+              Войти
             </Button>
-          </div>
+          </Link>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 to-primary/5 py-20">
+      <section className="relative bg-gradient-to-br from-primary/10 to-primary/5 py-20 md:py-32 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Профессиональная печать фотографий
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Качественная печать фотоальбомов, фотографий и календарей. 
-              Быстрая доставка по всей России. Услуги профессиональных фотографов.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                Национальный сервис цифровой фотопечати №1 в России
+              </h1>
+              <p className="text-xl md:text-2xl text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-100">
+                Профессиональная печать фотографий, альбомов и календарей с 2004 года
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-3 justify-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
               <Badge variant="secondary" className="text-base px-4 py-2">
-                ✓ Высокое качество
+                <Award className="h-4 w-4 mr-2" />
+                Высокое качество
               </Badge>
               <Badge variant="secondary" className="text-base px-4 py-2">
-                ✓ Быстрая доставка
+                <Clock className="h-4 w-4 mr-2" />
+                Быстрая доставка
               </Badge>
               <Badge variant="secondary" className="text-base px-4 py-2">
-                ✓ Тысячи клиентов
+                <Users className="h-4 w-4 mr-2" />
+                Тысячи клиентов
               </Badge>
+            </div>
+
+            <div className="flex flex-wrap gap-4 justify-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+              <Link href="/auth">
+                <Button size="lg" className="text-lg px-8" data-testid="button-get-started">
+                  Начать заказ
+                </Button>
+              </Link>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-8"
+                onClick={() => scrollToSection('services')}
+                data-testid="button-learn-more"
+              >
+                Узнать больше
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Section */}
-      <section className="py-16">
+      {/* Services Section */}
+      <section id="services" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Выберите тип продукта</h2>
-            <p className="text-muted-foreground">
-              Создайте фотоальбом, напечатайте фотографии или закажите календарь
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Наши услуги</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Широкий выбор продукции для сохранения ваших воспоминаний
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {products.map((product) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {services.map((service, index) => (
               <Card 
-                key={product.type} 
-                className="hover-elevate active-elevate-2 transition-all cursor-pointer"
-                onClick={() => navigate(`/product/${product.type}`)}
-                data-testid={`card-product-${product.type}`}
+                key={service.title}
+                className="hover-elevate active-elevate-2 transition-all overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700"
+                style={{ animationDelay: `${index * 100}ms` }}
+                data-testid={`card-service-${index}`}
               >
-                <CardHeader className="p-0">
-                  <div className="aspect-square overflow-hidden rounded-t-lg">
-                    <img 
-                      src={product.image} 
-                      alt={product.displayName}
-                      className="w-full h-full object-cover"
-                    />
+                <div className="aspect-video overflow-hidden">
+                  <img 
+                    src={service.image} 
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <service.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle>{service.title}</CardTitle>
                   </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <CardTitle className="mb-2">{product.displayName}</CardTitle>
-                  <CardDescription className="mb-4">
-                    {product.description}
+                  <CardDescription className="text-base">
+                    {service.description}
                   </CardDescription>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-sm text-muted-foreground">От</span>
-                    <span className="text-2xl font-bold">{product.priceFrom} ₽</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-6 pt-0">
-                  <Button className="w-full" data-testid={`button-select-${product.type}`}>
-                    Выбрать
-                  </Button>
-                </CardFooter>
+                </CardHeader>
               </Card>
             ))}
           </div>
@@ -152,74 +189,106 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-muted/30">
+      <section id="features" className="py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Наши преимущества</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Camera className="w-6 h-6 text-primary" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Почему выбирают нас</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Мы гордимся качеством наших услуг и доверием клиентов
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {features.map((feature, index) => (
+              <Card 
+                key={feature.title}
+                className="text-center hover-elevate transition-all animate-in fade-in slide-in-from-bottom-4 duration-700"
+                style={{ animationDelay: `${index * 100}ms` }}
+                data-testid={`card-feature-${index}`}
+              >
+                <CardHeader>
+                  <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10 w-fit">
+                    <feature.icon className="h-8 w-8 text-primary" />
                   </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Профессиональные фотографы</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Закажите профессиональную фотосессию с выбором фотографа, места и времени
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <ShoppingCart className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Удобный заказ</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Загрузите свои фотографии или закажите профессиональную съемку онлайн
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <span className="text-2xl">✓</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Гарантия качества</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Используем только профессиональное оборудование и качественные материалы
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <span className="text-2xl">🚚</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Быстрая доставка</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Доставляем готовые заказы по всей России в кратчайшие сроки
-                  </p>
-                </div>
-              </div>
-            </div>
+                  <CardTitle className="text-lg">{feature.title}</CardTitle>
+                  <CardDescription className="text-sm">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section Placeholder */}
+      <section id="faq" className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Часто задаваемые вопросы</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Задайте вопрос нашему боту-помощнику
+            </p>
+          </div>
+          
+          {/* FAQ Chatbot will be added in next task */}
+          <div className="max-w-3xl mx-auto">
+            <Card>
+              <CardContent className="p-12 text-center">
+                <p className="text-muted-foreground">
+                  Чат-бот для ответов на вопросы скоро будет доступен
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 bg-muted/20">
+      <footer className="bg-card border-t py-12">
         <div className="container mx-auto px-4">
-          <div className="text-center text-sm text-muted-foreground">
-            <p>© 2024 ФотоПринт. Все права защищены.</p>
-            <p className="mt-2">Профессиональная печать фотографий по всей России</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <img src={logoSvg} alt="Netprint" className="h-8 mb-4" />
+              <p className="text-sm text-muted-foreground">
+                Национальный сервис цифровой фотопечати №1 в России по количеству пользователей
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Контакты</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <p>г. Москва, Волгоградский проспект, д. 42, ком. 6.3-23H</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Ссылки</h3>
+              <div className="space-y-2">
+                <Link href="/auth" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Войти
+                </Link>
+                <button 
+                  onClick={() => scrollToSection('services')}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  Услуги
+                </button>
+                <button 
+                  onClick={() => scrollToSection('features')}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  Преимущества
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
+            <p>© 2004-2026 Netprint. Все права защищены.</p>
           </div>
         </div>
       </footer>

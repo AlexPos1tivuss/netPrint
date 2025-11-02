@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Camera, Mail, Lock } from "lucide-react";
-import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
+import logoSvg from "@assets/netprint-logo.svg";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
@@ -16,7 +16,7 @@ export default function AuthPage() {
 
   // Redirect if already logged in (after all hooks)
   if (user) {
-    return <Redirect to="/" />;
+    return <Redirect to="/catalog" />;
   }
 
   const handleLogin = (e: React.FormEvent) => {
@@ -41,7 +41,7 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center space-y-2">
-            <img src={logoImage} alt="ФотоПринт" className="h-16 mx-auto" />
+            <img src={logoSvg} alt="Netprint" className="h-16 mx-auto" />
             <h1 className="text-3xl font-bold">Добро пожаловать</h1>
             <p className="text-muted-foreground">Войдите или создайте аккаунт</p>
           </div>
