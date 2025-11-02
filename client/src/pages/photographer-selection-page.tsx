@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Calendar as CalendarIcon, MapPin, User, Star, Check } from "lucide-react";
 import { Photographer } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
+import logoSvg from "@assets/netprint-logo.svg";
 
 // Time slots
 const timeSlots = [
@@ -36,7 +37,7 @@ export default function PhotographerSelectionPage() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [coordinates, setCoordinates] = useState<{lat: number, lng: number}>();
+  const [coordinates, setCoordinates] = useState<{lat: number, lng: number}>({ lat: 55.7558, lng: 37.6173 }); // Default to Moscow center
 
   const { data: photographers, isLoading } = useQuery<Photographer[]>({
     queryKey: ['/api/photographers'],
@@ -94,34 +95,23 @@ export default function PhotographerSelectionPage() {
     createOrderMutation.mutate();
   };
 
-  // Location handler with geocoding
-  const handleLocationChange = async (value: string) => {
+  // Predefined popular Moscow locations
+  const popularLocations = [
+    { name: "На усмотрение фотографа", coords: { lat: 55.7558, lng: 37.6173 } },
+    { name: "Красная площадь", coords: { lat: 55.7539, lng: 37.6208 } },
+    { name: "Парк Горького", coords: { lat: 55.7304, lng: 37.6013 } },
+    { name: "ВДНХ", coords: { lat: 55.8304, lng: 37.6286 } },
+    { name: "Парк Зарядье", coords: { lat: 55.7513, lng: 37.6285 } },
+    { name: "Воробьёвы горы", coords: { lat: 55.7105, lng: 37.5424 } },
+    { name: "Патриаршие пруды", coords: { lat: 55.7649, lng: 37.5949 } },
+    { name: "Коломенское", coords: { lat: 55.6672, lng: 37.6719 } },
+  ];
+
+  const handleLocationChange = (value: string) => {
     setLocation(value);
-    
-    // Simple geocoding using Google Maps Geocoding API
-    // In production, this should use a proper API key
-    if (value.length > 3) {
-      try {
-        // For demo purposes, use a simple coordinate mapping
-        // In production, use Google Maps Geocoding API
-        const mockCoordinates: Record<string, {lat: number, lng: number}> = {
-          'москва': { lat: 55.7558, lng: 37.6173 },
-          'красная площадь': { lat: 55.7539, lng: 37.6208 },
-          'парк горького': { lat: 55.7304, lng: 37.6013 },
-          'вднх': { lat: 55.8304, lng: 37.6286 },
-        };
-        
-        const key = value.toLowerCase();
-        const coords = Object.keys(mockCoordinates).find(k => key.includes(k));
-        if (coords) {
-          setCoordinates(mockCoordinates[coords]);
-        } else {
-          // Default to Moscow center
-          setCoordinates({ lat: 55.7558, lng: 37.6173 });
-        }
-      } catch (error) {
-        console.error("Geocoding error:", error);
-      }
+    const selectedLocation = popularLocations.find(loc => loc.name === value);
+    if (selectedLocation) {
+      setCoordinates(selectedLocation.coords);
     }
   };
 
@@ -131,7 +121,7 @@ export default function PhotographerSelectionPage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoImage} alt="ФотоПринт" className="h-10 cursor-pointer" />
+            <img src={logoSvg} alt="Netprint" className="h-8 cursor-pointer" />
           </Link>
         </div>
       </header>
@@ -271,39 +261,42 @@ export default function PhotographerSelectionPage() {
               <CardHeader>
                 <CardTitle>Место съемки</CardTitle>
                 <CardDescription>
-                  Укажите адрес или место проведения фотосессии
+                  Выберите место фотосессии на карте
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="location">Адрес</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="location"
-                      placeholder="Введите адрес (например: Красная площадь, Москва)"
-                      className="pl-9"
-                      value={location}
-                      onChange={(e) => handleLocationChange(e.target.value)}
-                      data-testid="input-location"
-                    />
-                  </div>
+                {/* Google Maps Embed - Always visible */}
+                <div className="w-full h-80 rounded-lg overflow-hidden border">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    style={{ border: 0 }}
+                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${coordinates.lat},${coordinates.lng}&zoom=14`}
+                    allowFullScreen
+                    title="Google Maps"
+                    data-testid="google-maps-iframe"
+                  />
                 </div>
 
-                {/* Google Maps Embed */}
-                {location && coordinates && (
-                  <div className="w-full h-64 rounded-lg overflow-hidden border">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      style={{ border: 0 }}
-                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${coordinates.lat},${coordinates.lng}&zoom=15`}
-                      allowFullScreen
-                      title="Google Maps"
-                    />
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="location">Выберите популярное место</Label>
+                  <Select value={location} onValueChange={handleLocationChange}>
+                    <SelectTrigger id="location" data-testid="select-location">
+                      <SelectValue placeholder="Выберите место съемки" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {popularLocations.map((loc) => (
+                        <SelectItem key={loc.name} value={loc.name}>
+                          {loc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Выберите "На усмотрение фотографа", если не знаете конкретное место
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
