@@ -8,6 +8,16 @@
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**November 2, 2025:**
+- **FAQ Chatbot Integration**: Added interactive chatbot to landing page with 8 predefined questions, animated messages, and reset functionality
+- **Google Maps Enhancement**: Redesigned photographer location selection with always-visible map and dropdown containing 9 locations (8 popular Moscow spots + "На усмотрение фотографа")
+- **Product Config Animations**: Enhanced product configuration pages with framer-motion animations and product hero images with gradient overlays for all three product types
+- **Photographer Photos Fix**: Corrected photo paths in database and seed.ts to match actual filenames in attached_assets directory
+- **Order Creation Bug Fix**: Fixed Zod schema to accept ISO date strings for shootingDate field, transforming them to Date objects during validation
+- **Logo Update**: Replaced all blue logos with purple netprint.ru logo throughout application
+
 ## System Architecture
 
 ### Frontend Architecture

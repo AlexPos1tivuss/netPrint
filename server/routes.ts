@@ -86,6 +86,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       if (!result.success) {
+        console.error("Order validation failed:", JSON.stringify(result.error.issues, null, 2));
+        console.error("Received order data:", JSON.stringify({ ...orderData, userId: req.user!.id }, null, 2));
         return res.status(400).send("Неверные данные заказа");
       }
 

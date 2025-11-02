@@ -115,6 +115,9 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  // Coerce ISO date string to Date object
+  shootingDate: z.string().datetime().transform((val) => new Date(val)).optional(),
 });
 
 export const insertOrderPhotoSchema = createInsertSchema(orderPhotos).omit({
