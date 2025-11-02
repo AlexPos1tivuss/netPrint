@@ -57,7 +57,7 @@ export default function PhotographerSelectionPage() {
         photoSource: 'photographer',
         productConfig,
         photographerId: selectedPhotographer,
-        shootingDate: selectedDate,
+        shootingDate: selectedDate?.toISOString(),
         shootingTime: selectedTime,
         shootingLocation: location,
         shootingCoordinates: coordinates,
