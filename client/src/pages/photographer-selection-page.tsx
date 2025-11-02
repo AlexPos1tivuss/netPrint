@@ -95,7 +95,7 @@ export default function PhotographerSelectionPage() {
     createOrderMutation.mutate();
   };
 
-  // Predefined popular Moscow locations
+  // Predefined popular Moscow locations (8 locations + photographer's discretion)
   const popularLocations = [
     { name: "На усмотрение фотографа", coords: { lat: 55.7558, lng: 37.6173 } },
     { name: "Красная площадь", coords: { lat: 55.7539, lng: 37.6208 } },
@@ -105,6 +105,7 @@ export default function PhotographerSelectionPage() {
     { name: "Воробьёвы горы", coords: { lat: 55.7105, lng: 37.5424 } },
     { name: "Патриаршие пруды", coords: { lat: 55.7649, lng: 37.5949 } },
     { name: "Коломенское", coords: { lat: 55.6672, lng: 37.6719 } },
+    { name: "Московский Кремль", coords: { lat: 55.7520, lng: 37.6175 } },
   ];
 
   const handleLocationChange = (value: string) => {

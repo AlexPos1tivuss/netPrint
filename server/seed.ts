@@ -4,9 +4,9 @@ import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 
 // Image paths (these will be served by the frontend)
-const photographer1Image = "/attached_assets/generated_images/Professional_photographer_portrait_male_b6dc45aa.png";
-const photographer2Image = "/attached_assets/generated_images/Professional_photographer_portrait_female_1ebc04cc.png";
-const photographer3Image = "/attached_assets/generated_images/Professional_photographer_portrait_male_2_f5a20f3c.png";
+const photographer1Image = "/attached_assets/generated_images/Professional_photographer_portrait_male_8402f3c7.png";
+const photographer2Image = "/attached_assets/generated_images/Professional_photographer_portrait_female_b7ef2a0e.png";
+const photographer3Image = "/attached_assets/generated_images/Professional_photographer_portrait_senior_e8e1c0f2.png";
 
 const scryptAsync = promisify(scrypt);
 
