@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRoute, useLocation, Link } from "wouter";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -11,7 +12,10 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Upload, Camera, MapPin, Calendar as CalendarIcon, Clock } from "lucide-react";
 import { PhotoalbumConfig, PhotosConfig, CalendarConfig } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
+import logoSvg from "@assets/netprint-logo.svg";
+import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
+import photosImage from "@assets/generated_images/Stack_glossy_photo_prints_3ba30edf.png";
+import calendarImage from "@assets/generated_images/Modern_wall_calendar_2025_6ee0d16e.png";
 
 type ProductConfig = PhotoalbumConfig | PhotosConfig | CalendarConfig;
 
@@ -113,7 +117,7 @@ export default function ProductConfigPage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoImage} alt="ФотоПринт" className="h-10 cursor-pointer" />
+            <img src={logoSvg} alt="Netprint" className="h-8 cursor-pointer" />
           </Link>
         </div>
       </header>
@@ -138,9 +142,50 @@ export default function ProductConfigPage() {
               </p>
             </div>
 
+            {/* Product Image Preview */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="relative overflow-hidden rounded-lg"
+            >
+              <img
+                src={
+                  productType === 'photoalbum' ? photoalbumImage :
+                  productType === 'photos' ? photosImage :
+                  calendarImage
+                }
+                alt={
+                  productType === 'photoalbum' ? 'Фотоальбом' :
+                  productType === 'photos' ? 'Фотографии' :
+                  'Календарь'
+                }
+                className="w-full h-64 object-cover rounded-lg"
+                data-testid="product-image"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg" />
+              <div className="absolute bottom-4 left-4 text-white">
+                <h3 className="text-2xl font-bold">
+                  {productType === 'photoalbum' && 'Фотоальбом'}
+                  {productType === 'photos' && 'Печать фотографий'}
+                  {productType === 'calendar' && 'Календарь'}
+                </h3>
+                <p className="text-sm text-white/90">
+                  {productType === 'photoalbum' && 'Премиум качество для ваших воспоминаний'}
+                  {productType === 'photos' && 'Профессиональная печать на качественной бумаге'}
+                  {productType === 'calendar' && 'Настенный календарь с вашими фотографиями'}
+                </p>
+              </div>
+            </motion.div>
+
             {/* Photoalbum Configuration */}
             {productType === 'photoalbum' && (
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                <Card>
                 <CardHeader>
                   <CardTitle>Параметры фотоальбома</CardTitle>
                 </CardHeader>
@@ -211,11 +256,17 @@ export default function ProductConfigPage() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             )}
 
             {/* Photos Configuration */}
             {productType === 'photos' && (
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                <Card>
                 <CardHeader>
                   <CardTitle>Параметры печати фотографий</CardTitle>
                 </CardHeader>
@@ -283,11 +334,17 @@ export default function ProductConfigPage() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             )}
 
             {/* Calendar Configuration */}
             {productType === 'calendar' && (
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                <Card>
                 <CardHeader>
                   <CardTitle>Параметры календаря</CardTitle>
                 </CardHeader>
@@ -349,10 +406,16 @@ export default function ProductConfigPage() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             )}
 
             {/* Photo Source Selection */}
-            <Card>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+            >
+              <Card>
               <CardHeader>
                 <CardTitle>Источник фотографий</CardTitle>
                 <CardDescription>Выберите как вы хотите предоставить фотографии</CardDescription>
@@ -383,6 +446,7 @@ export default function ProductConfigPage() {
                 </Tabs>
               </CardContent>
             </Card>
+            </motion.div>
           </div>
 
           {/* Price Summary (Sticky) */}
