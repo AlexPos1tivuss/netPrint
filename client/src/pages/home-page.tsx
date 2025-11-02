@@ -7,6 +7,7 @@ import logoSvg from "@assets/netprint-logo.svg";
 import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
 import photosImage from "@assets/generated_images/Stack_glossy_photo_prints_3ba30edf.png";
 import calendarImage from "@assets/generated_images/Modern_wall_calendar_2025_6ee0d16e.png";
+import { FAQChatbot } from "@/components/faq-chatbot";
 
 const services = [
   {
@@ -221,7 +222,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ Section Placeholder */}
+      {/* FAQ Section */}
       <section id="faq" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -231,16 +232,7 @@ export default function HomePage() {
             </p>
           </div>
           
-          {/* FAQ Chatbot will be added in next task */}
-          <div className="max-w-3xl mx-auto">
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground">
-                  Чат-бот для ответов на вопросы скоро будет доступен
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          <FAQChatbot />
         </div>
       </section>
 
