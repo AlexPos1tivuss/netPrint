@@ -20,35 +20,29 @@ import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
-  // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 
-  // Photographer operations
   getAllPhotographers(): Promise<Photographer[]>;
   getPhotographer(id: string): Promise<Photographer | undefined>;
   createPhotographer(photographer: InsertPhotographer): Promise<Photographer>;
 
-  // Product operations
   getAllProducts(): Promise<ProductType[]>;
   getProductByName(name: string): Promise<ProductType | undefined>;
   updateProduct(id: string, updates: UpdateProductType): Promise<ProductType | undefined>;
 
-  // Order operations
   getAllOrders(): Promise<Order[]>;
   getOrdersByUser(userId: string): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(orderId: string, status: string): Promise<Order | undefined>;
 
-  // Order photo operations
   addOrderPhoto(photo: InsertOrderPhoto): Promise<OrderPhoto>;
   getOrderPhotos(orderId: string): Promise<OrderPhoto[]>;
 }
 
 export class DbStorage implements IStorage {
-  // User operations
   async getUser(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
     return result[0];
@@ -64,7 +58,6 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
-  // Photographer operations
   async getAllPhotographers(): Promise<Photographer[]> {
     return await db.select().from(photographers);
   }
@@ -79,7 +72,6 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
-  // Product operations
   async getAllProducts(): Promise<ProductType[]> {
     return await db.select().from(productTypes);
   }
@@ -97,7 +89,6 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
-  // Order operations
   async getAllOrders(): Promise<Order[]> {
     return await db.select().from(orders).orderBy(desc(orders.createdAt));
   }
@@ -126,7 +117,6 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
-  // Order photo operations
   async addOrderPhoto(photo: InsertOrderPhoto): Promise<OrderPhoto> {
     const result = await db.insert(orderPhotos).values(photo).returning();
     return result[0];
@@ -137,7 +127,6 @@ export class DbStorage implements IStorage {
   }
 }
 
-// In-memory storage (fallback)
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private photographers: Map<string, Photographer>;
@@ -273,5 +262,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Use database storage if available, otherwise fallback to memory storage
 export const storage = process.env.DATABASE_URL ? new DbStorage() : new MemStorage();

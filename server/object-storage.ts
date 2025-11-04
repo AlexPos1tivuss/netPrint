@@ -3,7 +3,6 @@ import { randomUUID } from "crypto";
 
 const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
 
-// Configure storage client to use Replit's sidecar endpoint for authentication
 const storage = new Storage({
   credentials: {
     audience: "replit",
@@ -81,7 +80,7 @@ export async function generateSignedUploadUrl(fileName: string, contentType: str
     bucketName: bucketId,
     objectName: `${privateDir.split('/')[1]}/${objectName}`,
     method: 'PUT',
-    ttlSec: 900, // 15 minutes
+    ttlSec: 900,
     contentType,
   });
 
@@ -89,7 +88,6 @@ export async function generateSignedUploadUrl(fileName: string, contentType: str
 }
 
 export async function getSignedDownloadUrl(filePath: string): Promise<string> {
-  // Extract object name from filePath (remove bucket prefix)
   const parts = filePath.split('/');
   const objectName = parts.slice(1).join('/');
 
@@ -97,7 +95,7 @@ export async function getSignedDownloadUrl(filePath: string): Promise<string> {
     bucketName: bucketId,
     objectName,
     method: 'GET',
-    ttlSec: 3600, // 1 hour
+    ttlSec: 3600,
   });
 
   return signedUrl;

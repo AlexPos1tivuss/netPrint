@@ -3,7 +3,6 @@ import { users, photographers } from "@shared/schema";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 
-// Image paths (these will be served by the frontend)
 const photographer1Image = "/attached_assets/generated_images/Professional_photographer_portrait_male_8402f3c7.png";
 const photographer2Image = "/attached_assets/generated_images/Professional_photographer_portrait_female_b7ef2a0e.png";
 const photographer3Image = "/attached_assets/generated_images/Professional_photographer_portrait_senior_e8e1c0f2.png";
@@ -20,7 +19,6 @@ export async function seedDatabase() {
   try {
     console.log("Starting database seed...");
 
-    // Check if admin user exists
     const existingAdmin = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.username, "admin"),
     });
@@ -38,7 +36,6 @@ export async function seedDatabase() {
       console.log("Admin user already exists");
     }
 
-    // Check if photographers exist
     const existingPhotographers = await db.query.photographers.findMany();
     
     if (existingPhotographers.length === 0) {

@@ -59,7 +59,6 @@ export default function AdminDashboardPage() {
     },
   });
 
-  // Calculate statistics
   const stats = orders ? {
     totalOrders: orders.length,
     totalRevenue: orders.reduce((sum, order) => sum + order.totalPrice, 0),

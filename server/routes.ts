@@ -5,7 +5,6 @@ import { storage } from "./storage";
 import { insertOrderSchema, updateProductTypeSchema } from "@shared/schema";
 import { generateSignedUploadUrl } from "./object-storage";
 
-// Middleware to check if user is authenticated
 function requireAuth(req: any, res: any, next: any) {
   if (!req.isAuthenticated()) {
     return res.status(401).send("Требуется авторизация");
@@ -13,7 +12,6 @@ function requireAuth(req: any, res: any, next: any) {
   next();
 }
 
-// Middleware to check if user is admin
 function requireAdmin(req: any, res: any, next: any) {
   if (!req.isAuthenticated() || !req.user?.isAdmin) {
     return res.status(403).send("Требуются права администратора");
@@ -22,10 +20,8 @@ function requireAdmin(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup authentication
   setupAuth(app);
 
-  // Photo upload routes
   app.post("/api/upload/signed-url", requireAuth, async (req, res) => {
     try {
       const { fileName, contentType } = req.body;
@@ -41,7 +37,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Product routes
   app.get("/api/products", requireAuth, async (req, res) => {
     try {
       const products = await storage.getAllProducts();
@@ -71,7 +66,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Photographer routes
   app.get("/api/photographers", requireAuth, async (req, res) => {
     try {
       const photographers = await storage.getAllPhotographers();
@@ -95,7 +89,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Order routes
   app.get("/api/orders", requireAuth, async (req, res) => {
     try {
       const orders = await storage.getOrdersByUser(req.user!.id);
@@ -123,7 +116,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const order = await storage.createOrder(result.data);
       
-      // Save uploaded photo paths if provided
       if (uploadedPhotoPaths && Array.isArray(uploadedPhotoPaths)) {
         for (const photoPath of uploadedPhotoPaths) {
           await storage.addOrderPhoto({
@@ -147,7 +139,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).send("Заказ не найден");
       }
 
-      // Check if user owns this order or is admin
       if (order.userId !== req.user!.id && !req.user!.isAdmin) {
         return res.status(403).send("Доступ запрещен");
       }
@@ -159,7 +150,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin routes
   app.get("/api/admin/orders", requireAdmin, async (req, res) => {
     try {
       const orders = await storage.getAllOrders();

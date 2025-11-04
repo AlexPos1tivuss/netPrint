@@ -42,10 +42,10 @@ export function setupAuth(app: Express) {
     cookie: {
       httpOnly: true,
       secure: app.get("env") === "production",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, 
     },
     store: new MemoryStore({
-      checkPeriod: 86400000, // prune expired entries every 24h
+      checkPeriod: 86400000,
     }),
   };
 
@@ -90,7 +90,6 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Auth routes
   app.post("/api/register", async (req, res, next) => {
     try {
       const result = insertUserSchema.safeParse(req.body);
@@ -100,25 +99,21 @@ export function setupAuth(app: Express) {
 
       const { username, password } = result.data;
 
-      // Check if user already exists
       const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
         return res.status(400).send("Пользователь с таким именем уже существует");
       }
 
-      // Hash password and create user
       const hashedPassword = await crypto.hash(password);
       const user = await storage.createUser({
         username,
         password: hashedPassword,
       });
 
-      // Log in the new user
       req.login(user, (err) => {
         if (err) {
           return next(err);
         }
-        // Return user without password
         const { password: _, ...userWithoutPassword } = user;
         return res.json(userWithoutPassword);
       });
@@ -142,7 +137,6 @@ export function setupAuth(app: Express) {
           return next(err);
         }
 
-        // Return user without password
         const { password: _, ...userWithoutPassword } = user;
         return res.json(userWithoutPassword);
       });
