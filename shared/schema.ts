@@ -111,6 +111,13 @@ export const insertProductTypeSchema = createInsertSchema(productTypes).omit({
   createdAt: true,
 });
 
+export const updateProductTypeSchema = z.object({
+  displayName: z.string().min(1, "Название обязательно"),
+  description: z.string().min(1, "Описание обязательно"),
+  basePrice: z.number().min(0, "Цена должна быть положительной"),
+  image: z.string().min(1, "Изображение обязательно"),
+});
+
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
@@ -134,6 +141,7 @@ export type Order = typeof orders.$inferSelect;
 export type OrderPhoto = typeof orderPhotos.$inferSelect;
 export type InsertPhotographer = z.infer<typeof insertPhotographerSchema>;
 export type InsertProductType = z.infer<typeof insertProductTypeSchema>;
+export type UpdateProductType = z.infer<typeof updateProductTypeSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertOrderPhoto = z.infer<typeof insertOrderPhotoSchema>;
 

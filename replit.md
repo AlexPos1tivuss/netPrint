@@ -10,6 +10,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**November 4, 2025:**
+- **Admin Product Configuration**: Added admin-only product editing functionality with modal dialog
+  - Settings icon button visible only to administrators on catalog page
+  - Modal form for editing product name, description, price, and image URL
+  - Real-time updates to catalog after saving changes
+  - Cancel and Save buttons with proper validation and error handling
+
 **November 2, 2025:**
 - **FAQ Chatbot Integration**: Added interactive chatbot to landing page with 8 predefined questions, animated messages, and reset functionality
 - **Google Maps Enhancement**: Redesigned photographer location selection with always-visible map and dropdown containing 9 locations (8 popular Moscow spots + "На усмотрение фотографа")

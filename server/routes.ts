@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertOrderSchema } from "@shared/schema";
+import { insertOrderSchema, updateProductTypeSchema } from "@shared/schema";
 import { generateSignedUploadUrl } from "./object-storage";
 
 // Middleware to check if user is authenticated
@@ -38,6 +38,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating signed URL:", error);
       res.status(500).send("Ошибка создания URL для загрузки");
+    }
+  });
+
+  // Product routes
+  app.get("/api/products", requireAuth, async (req, res) => {
+    try {
+      const products = await storage.getAllProducts();
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).send("Ошибка получения списка продуктов");
+    }
+  });
+
+  app.patch("/api/products/:id", requireAdmin, async (req, res) => {
+    try {
+      const result = updateProductTypeSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).send("Неверные данные продукта");
+      }
+
+      const updated = await storage.updateProduct(req.params.id, result.data);
+      if (!updated) {
+        return res.status(404).send("Продукт не найден");
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).send("Ошибка обновления продукта");
     }
   });
 

@@ -3,12 +3,15 @@ import {
   type InsertUser,
   type Photographer,
   type InsertPhotographer,
+  type ProductType,
+  type UpdateProductType,
   type Order,
   type InsertOrder,
   type OrderPhoto,
   type InsertOrderPhoto,
   users,
   photographers,
+  productTypes,
   orders,
   orderPhotos,
 } from "@shared/schema";
@@ -26,6 +29,11 @@ export interface IStorage {
   getAllPhotographers(): Promise<Photographer[]>;
   getPhotographer(id: string): Promise<Photographer | undefined>;
   createPhotographer(photographer: InsertPhotographer): Promise<Photographer>;
+
+  // Product operations
+  getAllProducts(): Promise<ProductType[]>;
+  getProductByName(name: string): Promise<ProductType | undefined>;
+  updateProduct(id: string, updates: UpdateProductType): Promise<ProductType | undefined>;
 
   // Order operations
   getAllOrders(): Promise<Order[]>;
@@ -68,6 +76,24 @@ export class DbStorage implements IStorage {
 
   async createPhotographer(photographer: InsertPhotographer): Promise<Photographer> {
     const result = await db.insert(photographers).values(photographer).returning();
+    return result[0];
+  }
+
+  // Product operations
+  async getAllProducts(): Promise<ProductType[]> {
+    return await db.select().from(productTypes);
+  }
+
+  async getProductByName(name: string): Promise<ProductType | undefined> {
+    const result = await db.select().from(productTypes).where(eq(productTypes.name, name)).limit(1);
+    return result[0];
+  }
+
+  async updateProduct(id: string, updates: UpdateProductType): Promise<ProductType | undefined> {
+    const result = await db.update(productTypes)
+      .set(updates)
+      .where(eq(productTypes.id, id))
+      .returning();
     return result[0];
   }
 
@@ -115,12 +141,14 @@ export class DbStorage implements IStorage {
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private photographers: Map<string, Photographer>;
+  private products: Map<string, ProductType>;
   private orders: Map<string, Order>;
   private orderPhotos: Map<string, OrderPhoto>;
 
   constructor() {
     this.users = new Map();
     this.photographers = new Map();
+    this.products = new Map();
     this.orders = new Map();
     this.orderPhotos = new Map();
   }
@@ -160,10 +188,28 @@ export class MemStorage implements IStorage {
     const newPhotographer: Photographer = {
       ...photographer,
       id,
+      rating: photographer.rating ?? 5,
       createdAt: new Date(),
     };
     this.photographers.set(id, newPhotographer);
     return newPhotographer;
+  }
+
+  async getAllProducts(): Promise<ProductType[]> {
+    return Array.from(this.products.values());
+  }
+
+  async getProductByName(name: string): Promise<ProductType | undefined> {
+    return Array.from(this.products.values()).find(p => p.name === name);
+  }
+
+  async updateProduct(id: string, updates: UpdateProductType): Promise<ProductType | undefined> {
+    const product = this.products.get(id);
+    if (!product) return undefined;
+    
+    const updated: ProductType = { ...product, ...updates };
+    this.products.set(id, updated);
+    return updated;
   }
 
   async getAllOrders(): Promise<Order[]> {
@@ -187,6 +233,12 @@ export class MemStorage implements IStorage {
     const newOrder: Order = {
       ...order,
       id,
+      status: order.status ?? "pending",
+      photographerId: order.photographerId ?? null,
+      shootingDate: order.shootingDate ?? null,
+      shootingTime: order.shootingTime ?? null,
+      shootingLocation: order.shootingLocation ?? null,
+      shootingCoordinates: order.shootingCoordinates ?? null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
