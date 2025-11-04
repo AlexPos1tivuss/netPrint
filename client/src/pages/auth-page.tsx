@@ -185,10 +185,9 @@ export default function AuthPage() {
       </div>
 
       {/* Right side - Hero */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary to-primary/80 items-center justify-center p-12 text-primary-foreground">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#AA14F0] to-[#AA14F0]/80 items-center justify-center p-12 text-primary-foreground">
         <div className="max-w-md space-y-6 text-center">
           <Camera className="w-24 h-24 mx-auto opacity-90" />
-          <h2 className="text-4xl font-bold">ФотоПринт</h2>
           <p className="text-xl opacity-90">
             Профессиональная печать фотографий, фотоальбомов и календарей
           </p>

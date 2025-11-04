@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Calendar, Clock, MapPin, User, Package } from "lucide-react";
 import { Order } from "@shared/schema";
 import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
+import logoSvg from "@assets/netprint-logo.svg";
 
 const statusMap: Record<string, {label: string, variant: 'default' | 'secondary' | 'destructive' | 'outline'}> = {
   pending: { label: 'В обработке', variant: 'secondary' },
@@ -35,7 +36,7 @@ export default function ProfilePage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoImage} alt="ФотоПринт" className="h-10 cursor-pointer" />
+            <img src={logoSvg} alt="ФотоПринт" className="h-10 cursor-pointer" />
           </Link>
         </div>
       </header>

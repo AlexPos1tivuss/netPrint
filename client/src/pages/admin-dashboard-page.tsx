@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, Package, Users, TrendingUp, DollarSign } from "lucide-react";
 import { Order } from "@shared/schema";
+import logoSvg from "@assets/netprint-logo.svg";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
@@ -76,7 +77,7 @@ export default function AdminDashboardPage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoImage} alt="ФотоПринт" className="h-10 cursor-pointer" />
+            <img src={logoSvg} alt="ФотоПринт" className="h-10 cursor-pointer" />
           </Link>
         </div>
       </header>

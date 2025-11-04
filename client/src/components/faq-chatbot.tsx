@@ -121,7 +121,7 @@ export function FAQChatbot() {
             <Bot className="h-6 w-6 text-primary" />
           </div>
           <div className="flex-1">
-            <CardTitle className="text-lg">Бот-помощник Netprint</CardTitle>
+            <CardTitle className="text-lg">Бот-помощник netPrint</CardTitle>
             <p className="text-sm text-muted-foreground">Ответы на часто задаваемые вопросы</p>
           </div>
           {messages.length > 1 && (

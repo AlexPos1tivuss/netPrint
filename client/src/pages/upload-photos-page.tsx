@@ -6,6 +6,7 @@ import { ArrowLeft, Upload, X, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import logoSvg from "@assets/netprint-logo.svg";
 import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
 
 export default function UploadPhotosPage() {
@@ -142,7 +143,7 @@ export default function UploadPhotosPage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoImage} alt="ФотоПринт" className="h-10 cursor-pointer" />
+            <img src={logoSvg} alt="ФотоПринт" className="h-10 cursor-pointer" />
           </Link>
         </div>
       </header>
