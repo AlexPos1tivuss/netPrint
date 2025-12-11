@@ -24,6 +24,7 @@ import calendarImage from "@assets/generated_images/Modern_wall_calendar_2025_6e
 const productImages: Record<string, string> = {
   photoalbum: photoalbumImage,
   photos: photosImage,
+  prints: photosImage,
   calendar: calendarImage,
 };
 

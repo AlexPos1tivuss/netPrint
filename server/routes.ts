@@ -179,6 +179,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/orders/:orderId/photos", requireAdmin, async (req, res) => {
+    try {
+      const photos = await storage.getOrderPhotos(req.params.orderId);
+      res.json(photos);
+    } catch (error) {
+      console.error("Error fetching order photos:", error);
+      res.status(500).send("Ошибка получения фотографий заказа");
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
