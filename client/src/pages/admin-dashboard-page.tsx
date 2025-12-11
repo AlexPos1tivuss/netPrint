@@ -1,4 +1,3 @@
-import { useState, Fragment } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link, Redirect } from "wouter";
@@ -7,12 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ArrowLeft, Package, Users, TrendingUp, DollarSign, Image, ChevronDown, ChevronUp } from "lucide-react";
-import { Order, OrderPhoto } from "@shared/schema";
+import { ArrowLeft, Package, Users, TrendingUp, DollarSign } from "lucide-react";
+import { Order } from "@shared/schema";
 import logoSvg from "@assets/netprint-logo.svg";
-import { apiRequest, queryClient, getQueryFn } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
 
 const statusMap: Record<string, {label: string, variant: 'default' | 'secondary' | 'destructive' | 'outline'}> = {
   pending: { label: 'В обработке', variant: 'secondary' },
@@ -30,8 +29,6 @@ const productTypeMap: Record<string, string> = {
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
-  const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
 
   // Redirect if not admin (after all hooks)
   if (user && !user.isAdmin) {
@@ -40,12 +37,6 @@ export default function AdminDashboardPage() {
 
   const { data: orders, isLoading } = useQuery<Order[]>({
     queryKey: ['/api/admin/orders'],
-  });
-
-  const { data: orderPhotos } = useQuery<OrderPhoto[]>({
-    queryKey: ['/api/admin/orders', expandedOrderId, 'photos'],
-    queryFn: getQueryFn({ on401: "throw" }),
-    enabled: !!expandedOrderId,
   });
 
   const updateStatusMutation = useMutation({
@@ -191,7 +182,6 @@ export default function AdminDashboardPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-10"></TableHead>
                         <TableHead>ID заказа</TableHead>
                         <TableHead>Пользователь</TableHead>
                         <TableHead>Продукт</TableHead>
@@ -202,101 +192,41 @@ export default function AdminDashboardPage() {
                     </TableHeader>
                     <TableBody>
                       {orders.map((order) => (
-                        <Fragment key={order.id}>
-                          <TableRow data-testid={`row-order-${order.id}`}>
-                            <TableCell>
-                              {order.photoSource === 'upload' && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
-                                  data-testid={`button-expand-${order.id}`}
-                                >
-                                  {expandedOrderId === order.id ? (
-                                    <ChevronUp className="h-4 w-4" />
-                                  ) : (
-                                    <ChevronDown className="h-4 w-4" />
-                                  )}
-                                </Button>
-                              )}
-                            </TableCell>
-                            <TableCell className="font-mono text-sm">
-                              {order.id.slice(0, 8)}
-                            </TableCell>
-                            <TableCell>{order.userId}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                {productTypeMap[order.productType] || order.productType}
-                                {order.photoSource === 'upload' && (
-                                  <Badge variant="outline" className="text-xs">
-                                    <Image className="h-3 w-3 mr-1" />
-                                    Фото
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {new Date(order.createdAt).toLocaleDateString('ru-RU', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              })}
-                            </TableCell>
-                            <TableCell className="font-semibold">
-                              {order.totalPrice.toLocaleString('ru-RU')} ₽
-                            </TableCell>
-                            <TableCell>
-                              <Select
-                                value={order.status}
-                                onValueChange={(status) => 
-                                  updateStatusMutation.mutate({ orderId: order.id, status })
-                                }
-                              >
-                                <SelectTrigger className="w-[180px]" data-testid={`select-status-${order.id}`}>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="pending">В обработке</SelectItem>
-                                  <SelectItem value="processing">В производстве</SelectItem>
-                                  <SelectItem value="ready">Готов к выдаче</SelectItem>
-                                  <SelectItem value="delivered">Доставлен</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                          {expandedOrderId === order.id && (
-                            <TableRow>
-                              <TableCell colSpan={7} className="bg-muted/30 p-4">
-                                <div className="space-y-2">
-                                  <p className="text-sm font-medium">Прикрепленные фотографии:</p>
-                                  {orderPhotos && orderPhotos.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                      {orderPhotos.map((photo) => (
-                                        <div 
-                                          key={photo.id} 
-                                          className="relative group cursor-pointer"
-                                          onClick={() => setSelectedPhotoUrl(photo.photoPath)}
-                                          data-testid={`photo-${photo.id}`}
-                                        >
-                                          <img
-                                            src={photo.photoPath}
-                                            alt="Фото заказа"
-                                            className="h-20 w-20 object-cover rounded-md border hover:border-primary transition-colors"
-                                          />
-                                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center">
-                                            <Image className="h-5 w-5 text-white" />
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p className="text-sm text-muted-foreground">Нет прикрепленных фотографий</p>
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </Fragment>
+                        <TableRow key={order.id} data-testid={`row-order-${order.id}`}>
+                          <TableCell className="font-mono text-sm">
+                            {order.id.slice(0, 8)}
+                          </TableCell>
+                          <TableCell>{order.userId}</TableCell>
+                          <TableCell>{productTypeMap[order.productType]}</TableCell>
+                          <TableCell>
+                            {new Date(order.createdAt).toLocaleDateString('ru-RU', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })}
+                          </TableCell>
+                          <TableCell className="font-semibold">
+                            {order.totalPrice.toLocaleString('ru-RU')} ₽
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={order.status}
+                              onValueChange={(status) => 
+                                updateStatusMutation.mutate({ orderId: order.id, status })
+                              }
+                            >
+                              <SelectTrigger className="w-[180px]" data-testid={`select-status-${order.id}`}>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pending">В обработке</SelectItem>
+                                <SelectItem value="processing">В производстве</SelectItem>
+                                <SelectItem value="ready">Готов к выдаче</SelectItem>
+                                <SelectItem value="delivered">Доставлен</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        </TableRow>
                       ))}
                     </TableBody>
                   </Table>
@@ -306,25 +236,6 @@ export default function AdminDashboardPage() {
           </Card>
         </div>
       </div>
-
-      {/* Photo Preview Dialog */}
-      <Dialog open={!!selectedPhotoUrl} onOpenChange={(open) => !open && setSelectedPhotoUrl(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Просмотр фотографии</DialogTitle>
-            <DialogDescription>
-              Прикрепленная фотография к заказу
-            </DialogDescription>
-          </DialogHeader>
-          {selectedPhotoUrl && (
-            <img
-              src={selectedPhotoUrl}
-              alt="Фото заказа"
-              className="w-full h-auto rounded-lg"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

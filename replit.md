@@ -46,15 +46,9 @@ Preferred communication style: Simple, everyday language.
 The application uses these main entities:
 - **users**: Authentication with username/password, admin flag
 - **photographers**: Professional photographer profiles with hourly rates
-- **productTypes**: Configurable product catalog (photoalbum, prints, calendar) - NOTE: photos product uses "prints" as name in DB
+- **productTypes**: Configurable product catalog (photoalbum, photos, calendar)
 - **orders**: Customer orders with JSONB product configuration
 - **orderPhotos**: Links uploaded photos to orders
-
-### Recent Changes (December 2024)
-- Fixed "Фотографии" product display: product uses "prints" name in database, now properly mapped in frontend
-- Auth page now allows logout when already authenticated (fixes auto-login bug)
-- Admin panel shows attached photos for orders with expand/collapse functionality
-- API endpoint added: GET /api/admin/orders/:orderId/photos for fetching order photos
 
 ## External Dependencies
 

@@ -31,7 +31,7 @@ const calculatePrice = (productType: string, config: ProductConfig): number => {
     price += c.pages * 50;
     if (c.paperType === 'glossy') price += 200;
     return price;
-  } else if (productType === 'photos' || productType === 'prints') {
+  } else if (productType === 'photos') {
     const c = config as PhotosConfig;
     let pricePerPhoto = 10;
     if (c.size === '15x20') pricePerPhoto = 15;
@@ -84,7 +84,7 @@ export default function ProductConfigPage() {
 
   const getCurrentConfig = (): ProductConfig => {
     if (productType === 'photoalbum') return photoalbumConfig;
-    if (productType === 'photos' || productType === 'prints') return photosConfig;
+    if (productType === 'photos') return photosConfig;
     return calendarConfig;
   };
 
@@ -107,7 +107,7 @@ export default function ProductConfigPage() {
     }
   };
 
-  if (!['photoalbum', 'photos', 'prints', 'calendar'].includes(productType)) {
+  if (!['photoalbum', 'photos', 'calendar'].includes(productType)) {
     return <div>Продукт не найден</div>;
   }
 
@@ -134,7 +134,7 @@ export default function ProductConfigPage() {
             <div>
               <h1 className="text-3xl font-bold mb-2">
                 {productType === 'photoalbum' && 'Настройка фотоальбома'}
-                {(productType === 'photos' || productType === 'prints') && 'Настройка печати фотографий'}
+                {productType === 'photos' && 'Настройка печати фотографий'}
                 {productType === 'calendar' && 'Настройка календаря'}
               </h1>
               <p className="text-muted-foreground">
@@ -152,12 +152,12 @@ export default function ProductConfigPage() {
               <img
                 src={
                   productType === 'photoalbum' ? photoalbumImage :
-                  (productType === 'photos' || productType === 'prints') ? photosImage :
+                  productType === 'photos' ? photosImage :
                   calendarImage
                 }
                 alt={
                   productType === 'photoalbum' ? 'Фотоальбом' :
-                  (productType === 'photos' || productType === 'prints') ? 'Фотографии' :
+                  productType === 'photos' ? 'Фотографии' :
                   'Календарь'
                 }
                 className="w-full h-64 object-cover rounded-lg"
@@ -167,12 +167,12 @@ export default function ProductConfigPage() {
               <div className="absolute bottom-4 left-4 text-white">
                 <h3 className="text-2xl font-bold">
                   {productType === 'photoalbum' && 'Фотоальбом'}
-                  {(productType === 'photos' || productType === 'prints') && 'Печать фотографий'}
+                  {productType === 'photos' && 'Печать фотографий'}
                   {productType === 'calendar' && 'Календарь'}
                 </h3>
                 <p className="text-sm text-white/90">
                   {productType === 'photoalbum' && 'Премиум качество для ваших воспоминаний'}
-                  {(productType === 'photos' || productType === 'prints') && 'Профессиональная печать на качественной бумаге'}
+                  {productType === 'photos' && 'Профессиональная печать на качественной бумаге'}
                   {productType === 'calendar' && 'Настенный календарь с вашими фотографиями'}
                 </p>
               </div>
@@ -260,7 +260,7 @@ export default function ProductConfigPage() {
             )}
 
             {/* Photos Configuration */}
-            {(productType === 'photos' || productType === 'prints') && (
+            {productType === 'photos' && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
