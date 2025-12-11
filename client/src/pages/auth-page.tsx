@@ -10,14 +10,9 @@ import { Camera, Mail, Lock } from "lucide-react";
 import logoSvg from "@assets/netprint-logo.svg";
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, loginMutation, logoutMutation, registerMutation } = useAuth();
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({ username: "", password: "", confirmPassword: "" });
-
-  // Redirect if already logged in (after all hooks)
-  if (user) {
-    return <Redirect to="/catalog" />;
-  }
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,18 +38,34 @@ export default function AuthPage() {
           <div className="text-center space-y-2">
             <img src={logoSvg} alt="Netprint" className="h-16 mx-auto" />
             <h1 className="text-3xl font-bold">Добро пожаловать</h1>
-            <p className="text-muted-foreground">Войдите или создайте аккаунт</p>
+            {user ? (
+              <div className="space-y-2 pt-2">
+                <p className="text-muted-foreground">Вы авторизованы как <span className="font-semibold text-foreground">{user.username}</span></p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                  className="w-full"
+                  data-testid="button-logout-current"
+                >
+                  {logoutMutation.isPending ? "Выход..." : "Выход из аккаунта"}
+                </Button>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">Войдите или создайте аккаунт</p>
+            )}
           </div>
 
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2" style={{ opacity: user ? 0.5 : 1, pointerEvents: user ? "none" : "auto" }}>
               <TabsTrigger value="login" data-testid="tab-login">Вход</TabsTrigger>
               <TabsTrigger value="register" data-testid="tab-register">Регистрация</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
               <Card>
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleLogin} style={{ opacity: user ? 0.5 : 1, pointerEvents: user ? "none" : "auto" }}>
                   <CardHeader>
                     <CardTitle>Вход в систему</CardTitle>
                     <CardDescription>Введите ваши учетные данные</CardDescription>
@@ -109,7 +120,7 @@ export default function AuthPage() {
 
             <TabsContent value="register">
               <Card>
-                <form onSubmit={handleRegister}>
+                <form onSubmit={handleRegister} style={{ opacity: user ? 0.5 : 1, pointerEvents: user ? "none" : "auto" }}>
                   <CardHeader>
                     <CardTitle>Создать аккаунт</CardTitle>
                     <CardDescription>Заполните форму для регистрации</CardDescription>
