@@ -16,9 +16,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import logoSvg from "@assets/netprint-logo.svg";
+import sprinterLogo from "@assets/sprinter-logo.svg";
 
-// Time slots
 const timeSlots = [
   "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", 
   "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"
@@ -28,7 +27,6 @@ export default function PhotographerSelectionPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
-  // Get params from URL
   const params = new URLSearchParams(window.location.search);
   const productType = params.get('product') || '';
   const productPrice = parseInt(params.get('price') || '0');
@@ -37,7 +35,7 @@ export default function PhotographerSelectionPage() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [coordinates, setCoordinates] = useState<{lat: number, lng: number}>({ lat: 55.7558, lng: 37.6173 }); // Default to Moscow center
+  const [coordinates, setCoordinates] = useState<{lat: number, lng: number}>({ lat: 53.9045, lng: 27.5615 });
 
   const { data: photographers, isLoading } = useQuery<Photographer[]>({
     queryKey: ['/api/photographers'],
@@ -48,7 +46,6 @@ export default function PhotographerSelectionPage() {
 
   const createOrderMutation = useMutation({
     mutationFn: async () => {
-      // Get product config from sessionStorage
       const storedConfig = sessionStorage.getItem('productConfig');
       const productConfig = storedConfig ? JSON.parse(storedConfig).config : {};
       
@@ -67,6 +64,7 @@ export default function PhotographerSelectionPage() {
       return await res.json();
     },
     onSuccess: () => {
+      sessionStorage.removeItem('productConfig');
       toast({
         title: "Заказ создан!",
         description: "Ваш заказ с услугой фотографа успешно оформлен",
@@ -95,17 +93,15 @@ export default function PhotographerSelectionPage() {
     createOrderMutation.mutate();
   };
 
-  // Predefined popular Moscow locations (8 locations + photographer's discretion)
   const popularLocations = [
-    { name: "На усмотрение фотографа", coords: { lat: 55.7558, lng: 37.6173 } },
-    { name: "Красная площадь", coords: { lat: 55.7539, lng: 37.6208 } },
-    { name: "Парк Горького", coords: { lat: 55.7304, lng: 37.6013 } },
-    { name: "ВДНХ", coords: { lat: 55.8304, lng: 37.6286 } },
-    { name: "Парк Зарядье", coords: { lat: 55.7513, lng: 37.6285 } },
-    { name: "Воробьёвы горы", coords: { lat: 55.7105, lng: 37.5424 } },
-    { name: "Патриаршие пруды", coords: { lat: 55.7649, lng: 37.5949 } },
-    { name: "Коломенское", coords: { lat: 55.6672, lng: 37.6719 } },
-    { name: "Московский Кремль", coords: { lat: 55.7520, lng: 37.6175 } },
+    { name: "На усмотрение фотографа", coords: { lat: 53.9045, lng: 27.5615 } },
+    { name: "Центральный сквер", coords: { lat: 53.9068, lng: 27.5678 } },
+    { name: "Парк Горького", coords: { lat: 53.8890, lng: 27.5420 } },
+    { name: "Площадь Победы", coords: { lat: 53.9054, lng: 27.5437 } },
+    { name: "Проспект Независимости", coords: { lat: 53.9010, lng: 27.5590 } },
+    { name: "Троицкое предместье", coords: { lat: 53.9168, lng: 27.5482 } },
+    { name: "Комсомольское озеро", coords: { lat: 53.9130, lng: 27.5700 } },
+    { name: "Ботанический сад", coords: { lat: 53.9396, lng: 27.6054 } },
   ];
 
   const handleLocationChange = (value: string) => {
@@ -118,11 +114,10 @@ export default function PhotographerSelectionPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/">
-            <img src={logoSvg} alt="Netprint" className="h-8 cursor-pointer" />
+      <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
+        <div className="container mx-auto px-4 h-16 flex items-center">
+          <Link href="/catalog">
+            <img src={sprinterLogo} alt="S-Printer" className="h-8 cursor-pointer" />
           </Link>
         </div>
       </header>
@@ -135,19 +130,18 @@ export default function PhotographerSelectionPage() {
           data-testid="button-back"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Назад
+          Назад к настройкам
         </Button>
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Выбор фотографа</h1>
+              <h1 className="text-2xl font-bold mb-1">Выбор фотографа</h1>
               <p className="text-muted-foreground">
                 Выберите фотографа, дату, время и место съемки
               </p>
             </div>
 
-            {/* Photographer Selection */}
             <Card>
               <CardHeader>
                 <CardTitle>Выберите фотографа</CardTitle>
@@ -157,17 +151,21 @@ export default function PhotographerSelectionPage() {
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Загрузка фотографов...
+                  <div className="space-y-4">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-24 bg-muted rounded-md animate-pulse" />
+                    ))}
                   </div>
                 ) : (
                   <RadioGroup value={selectedPhotographer} onValueChange={setSelectedPhotographer}>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {photographers?.map((photographer) => (
                         <div 
                           key={photographer.id}
-                          className={`flex items-start gap-4 p-4 rounded-lg border-2 transition-all cursor-pointer hover-elevate ${
-                            selectedPhotographer === photographer.id ? 'border-primary bg-primary/5' : 'border-border'
+                          className={`flex items-start gap-4 p-4 rounded-md border transition-colors cursor-pointer hover-elevate ${
+                            selectedPhotographer === photographer.id 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-border'
                           }`}
                           onClick={() => setSelectedPhotographer(photographer.id)}
                           data-testid={`photographer-${photographer.id}`}
@@ -178,19 +176,19 @@ export default function PhotographerSelectionPage() {
                               <img 
                                 src={photographer.photo} 
                                 alt={photographer.name}
-                                className="w-16 h-16 rounded-full object-cover"
+                                className="w-14 h-14 rounded-full object-cover flex-shrink-0"
                               />
-                              <div className="flex-1">
-                                <Label htmlFor={photographer.id} className="text-lg font-semibold cursor-pointer">
+                              <div className="flex-1 min-w-0">
+                                <Label htmlFor={photographer.id} className="text-base font-semibold cursor-pointer">
                                   {photographer.name}
                                 </Label>
                                 <p className="text-sm text-muted-foreground mb-2">
                                   {photographer.specialization}
                                 </p>
-                                <div className="flex items-center gap-4 text-sm">
+                                <div className="flex flex-wrap items-center gap-3 text-sm">
                                   <div className="flex items-center gap-1">
                                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                    <span>{photographer.rating}/5</span>
+                                    <span className="font-medium">{photographer.rating}/5</span>
                                   </div>
                                   <Badge variant="secondary">
                                     {photographer.pricePerHour.toLocaleString('ru-RU')} ₽/час
@@ -207,7 +205,6 @@ export default function PhotographerSelectionPage() {
               </CardContent>
             </Card>
 
-            {/* Date and Time Selection */}
             <Card>
               <CardHeader>
                 <CardTitle>Дата и время съемки</CardTitle>
@@ -240,7 +237,7 @@ export default function PhotographerSelectionPage() {
 
                 <div className="space-y-2">
                   <Label>Выберите время</Label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                     {timeSlots.map((time) => (
                       <Button
                         key={time}
@@ -257,17 +254,15 @@ export default function PhotographerSelectionPage() {
               </CardContent>
             </Card>
 
-            {/* Location Selection */}
             <Card>
               <CardHeader>
                 <CardTitle>Место съемки</CardTitle>
                 <CardDescription>
-                  Выберите место фотосессии на карте
+                  Выберите место фотосессии
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Google Maps Embed - Always visible */}
-                <div className="w-full h-80 rounded-lg overflow-hidden border">
+                <div className="w-full h-64 rounded-md overflow-hidden border">
                   <iframe
                     width="100%"
                     height="100%"
@@ -281,7 +276,7 @@ export default function PhotographerSelectionPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="location">Выберите популярное место</Label>
+                  <Label htmlFor="location">Популярные места</Label>
                   <Select value={location} onValueChange={handleLocationChange}>
                     <SelectTrigger id="location" data-testid="select-location">
                       <SelectValue placeholder="Выберите место съемки" />
@@ -302,7 +297,6 @@ export default function PhotographerSelectionPage() {
             </Card>
           </div>
 
-          {/* Summary Sidebar */}
           <div className="lg:col-span-1">
             <Card className="sticky top-20">
               <CardHeader>
@@ -312,36 +306,45 @@ export default function PhotographerSelectionPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Продукт</span>
-                    <span>{productPrice} ₽</span>
+                    <span className="font-medium">{productPrice} ₽</span>
                   </div>
                   {selectedPhotographerData && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Фотограф</span>
-                      <span>{selectedPhotographerData.pricePerHour} ₽</span>
+                      <span className="text-muted-foreground">Фотограф (1ч)</span>
+                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('ru-RU')} ₽</span>
                     </div>
                   )}
                 </div>
+                
+                {selectedPhotographerData && selectedDate && selectedTime && location && (
+                  <>
+                    <div className="border-t pt-3">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Детали заказа</p>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <User className="w-3 h-3 text-muted-foreground" />
+                          <span>{selectedPhotographerData.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CalendarIcon className="w-3 h-3 text-muted-foreground" />
+                          <span>{format(selectedDate, "d MMMM, HH:mm", { locale: ru }).replace("HH:mm", selectedTime)}</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-3 h-3 mt-0.5 text-muted-foreground" />
+                          <span className="text-xs line-clamp-2">{location}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-lg font-bold mb-4">
                     <span>Итого</span>
-                    <span>{totalPrice.toLocaleString('ru-RU')} ₽</span>
+                    <span className="text-primary" data-testid="price-total">
+                      {totalPrice.toLocaleString('ru-RU')} ₽
+                    </span>
                   </div>
-                  {selectedPhotographerData && selectedDate && selectedTime && location && (
-                    <div className="mb-4 p-3 bg-muted rounded-lg text-sm space-y-1">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        <span>{selectedPhotographerData.name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CalendarIcon className="w-4 h-4" />
-                        <span>{format(selectedDate, "PPP", { locale: ru })} в {selectedTime}</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <MapPin className="w-4 h-4 mt-0.5" />
-                        <span className="line-clamp-2">{location}</span>
-                      </div>
-                    </div>
-                  )}
                   <Button 
                     className="w-full" 
                     size="lg"
@@ -349,15 +352,18 @@ export default function PhotographerSelectionPage() {
                     disabled={!selectedPhotographer || !selectedDate || !selectedTime || !location || createOrderMutation.isPending}
                     data-testid="button-create-order"
                   >
-                    {createOrderMutation.isPending ? (
-                      "Создание заказа..."
-                    ) : (
+                    {createOrderMutation.isPending ? "Создание заказа..." : (
                       <>
                         <Check className="mr-2 h-4 w-4" />
                         Оформить заказ
                       </>
                     )}
                   </Button>
+                  {(!selectedPhotographer || !selectedDate || !selectedTime || !location) && (
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      Заполните все поля для оформления заказа
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>

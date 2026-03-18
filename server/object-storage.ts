@@ -1,28 +1,9 @@
-import { Storage } from "@google-cloud/storage";
 import { randomUUID } from "crypto";
 
 const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
 
-const storage = new Storage({
-  credentials: {
-    audience: "replit",
-    subject_token_type: "access_token",
-    token_url: `${REPLIT_SIDECAR_ENDPOINT}/token`,
-    type: "external_account",
-    credential_source: {
-      url: `${REPLIT_SIDECAR_ENDPOINT}/credential`,
-      format: {
-        type: "json",
-        subject_token_field_name: "access_token",
-      },
-    },
-    universe_domain: "googleapis.com",
-  },
-  projectId: "",
-});
-
 const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID!;
-const privateDir = process.env.PRIVATE_OBJECT_DIR!;
+const privateDir = process.env.PRIVATE_OBJECT_DIR || ".private";
 
 async function signObjectURL({
   bucketName,
@@ -72,13 +53,18 @@ async function signObjectURL({
 
 export async function generateSignedUploadUrl(fileName: string, contentType: string): Promise<{ signedUrl: string; filePath: string }> {
   const fileId = randomUUID();
-  const extension = fileName.split('.').pop();
+  const extension = fileName.split('.').pop() || 'jpg';
   const objectName = `photos/${fileId}.${extension}`;
-  const filePath = `${privateDir}/${objectName}`;
+  
+  // privateDir is the full path like ".private" or "bucket-id/.private"
+  // We need the object path within the bucket
+  const privateDirName = privateDir.split('/').pop() || '.private';
+  const fullObjectName = `${privateDirName}/${objectName}`;
+  const filePath = `${privateDirName}/${objectName}`;
 
   const signedUrl = await signObjectURL({
     bucketName: bucketId,
-    objectName: `${privateDir.split('/')[1]}/${objectName}`,
+    objectName: fullObjectName,
     method: 'PUT',
     ttlSec: 900,
     contentType,
@@ -88,12 +74,9 @@ export async function generateSignedUploadUrl(fileName: string, contentType: str
 }
 
 export async function getSignedDownloadUrl(filePath: string): Promise<string> {
-  const parts = filePath.split('/');
-  const objectName = parts.slice(1).join('/');
-
   const signedUrl = await signObjectURL({
     bucketName: bucketId,
-    objectName,
+    objectName: filePath,
     method: 'GET',
     ttlSec: 3600,
   });

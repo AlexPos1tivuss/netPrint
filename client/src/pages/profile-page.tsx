@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Calendar, Clock, MapPin, User, Package } from "lucide-react";
+import { ArrowLeft, Calendar, LogOut, MapPin, User, Package, Shield } from "lucide-react";
 import { Order } from "@shared/schema";
-import logoImage from "@assets/generated_images/ФотоПринт_logo_modern_blue_239702b0.png";
-import logoSvg from "@assets/netprint-logo.svg";
+import sprinterLogo from "@assets/sprinter-logo.svg";
 
 const statusMap: Record<string, {label: string, variant: 'default' | 'secondary' | 'destructive' | 'outline'}> = {
   pending: { label: 'В обработке', variant: 'secondary' },
@@ -20,11 +19,12 @@ const statusMap: Record<string, {label: string, variant: 'default' | 'secondary'
 const productTypeMap: Record<string, string> = {
   photoalbum: 'Фотоальбом',
   photos: 'Фотографии',
+  prints: 'Фотографии',
   calendar: 'Календарь',
 };
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   
   const { data: orders, isLoading } = useQuery<Order[]>({
     queryKey: ['/api/orders'],
@@ -32,55 +32,89 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/">
-            <img src={logoSvg} alt="ФотоПринт" className="h-10 cursor-pointer" />
+      <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+          <Link href="/catalog">
+            <img src={sprinterLogo} alt="S-Printer" className="h-8 cursor-pointer" data-testid="logo-image" />
           </Link>
+          <div className="flex items-center gap-2">
+            {user?.isAdmin && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm" data-testid="link-admin">
+                  <Shield className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Админ</span>
+                </Button>
+              </Link>
+            )}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => logoutMutation.mutate()}
+              data-testid="button-logout"
+            >
+              <LogOut className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Выход</span>
+            </Button>
+          </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <Link href="/">
+        <Link href="/catalog">
           <Button variant="ghost" className="mb-6" data-testid="button-back">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            На главную
+            К каталогу
           </Button>
         </Link>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Мой профиль</h1>
-            <p className="text-muted-foreground">
-              Пользователь: <span className="font-medium">{user?.username}</span>
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold" data-testid="text-profile-title">Мой профиль</h1>
+              <p className="text-muted-foreground">
+                Пользователь: <span className="font-medium" data-testid="text-username">{user?.username}</span>
+                {user?.isAdmin && (
+                  <Badge variant="secondary" className="ml-2">Администратор</Badge>
+                )}
+              </p>
+            </div>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Мои заказы</CardTitle>
+              <CardTitle>История заказов</CardTitle>
               <CardDescription>
-                История всех ваших заказов
+                {orders?.length ? `Всего заказов: ${orders.length}` : 'Ваши заказы появятся здесь'}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  Загрузка заказов...
+                <div className="space-y-4">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="h-28 bg-muted rounded-md animate-pulse" />
+                  ))}
                 </div>
               ) : !orders || orders.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  У вас пока нет заказов
+                <div className="text-center py-16 space-y-3">
+                  <Package className="w-12 h-12 text-muted-foreground/40 mx-auto" />
+                  <p className="text-muted-foreground">У вас пока нет заказов</p>
+                  <Link href="/catalog">
+                    <Button variant="outline" size="sm" data-testid="button-to-catalog">
+                      Перейти к каталогу
+                    </Button>
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {orders.map((order) => (
                     <Card key={order.id} className="hover-elevate" data-testid={`order-${order.id}`}>
-                      <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                      <CardContent className="p-5">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
                               <Package className="w-5 h-5 text-primary" />
                             </div>
                             <div>
@@ -92,14 +126,17 @@ export default function ProfilePage() {
                               </p>
                             </div>
                           </div>
-                          <Badge variant={statusMap[order.status]?.variant || 'default'} data-testid={`status-${order.id}`}>
+                          <Badge 
+                            variant={statusMap[order.status]?.variant || 'default'} 
+                            data-testid={`status-${order.id}`}
+                          >
                             {statusMap[order.status]?.label || order.status}
                           </Badge>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                           <div className="flex items-center gap-2 text-muted-foreground">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-4 h-4 flex-shrink-0" />
                             <span>
                               {new Date(order.createdAt).toLocaleDateString('ru-RU', {
                                 day: '2-digit',
@@ -109,14 +146,16 @@ export default function ProfilePage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-2 font-semibold">
-                            <span>Стоимость:</span>
-                            <span data-testid={`price-${order.id}`}>{order.totalPrice.toLocaleString('ru-RU')} ₽</span>
+                            <span className="text-muted-foreground font-normal">Стоимость:</span>
+                            <span className="text-primary" data-testid={`price-${order.id}`}>
+                              {order.totalPrice.toLocaleString('ru-RU')} ₽
+                            </span>
                           </div>
                         </div>
 
                         {order.photoSource === 'photographer' && order.photographerId && (
                           <>
-                            <Separator className="my-4" />
+                            <Separator className="my-3" />
                             <div className="space-y-2">
                               <div className="flex items-center gap-2 text-sm">
                                 <User className="w-4 h-4 text-muted-foreground" />
@@ -126,7 +165,7 @@ export default function ProfilePage() {
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                   <Calendar className="w-4 h-4" />
                                   <span>
-                                    Дата съемки: {new Date(order.shootingDate).toLocaleDateString('ru-RU', {
+                                    {new Date(order.shootingDate).toLocaleDateString('ru-RU', {
                                       day: '2-digit',
                                       month: 'long',
                                       year: 'numeric',
@@ -137,7 +176,7 @@ export default function ProfilePage() {
                               )}
                               {order.shootingLocation && (
                                 <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                                  <MapPin className="w-4 h-4 mt-0.5" />
+                                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                   <span>{order.shootingLocation}</span>
                                 </div>
                               )}

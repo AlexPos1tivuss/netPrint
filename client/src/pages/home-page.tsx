@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Link, Redirect } from "wouter";
 import { Camera, Package, Calendar, Users, Shield, Clock, Award, MapPin } from "lucide-react";
-import logoSvg from "@assets/netprint-logo.svg";
+import sprinterLogo from "@assets/sprinter-logo.svg";
 import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
 import photosImage from "@assets/generated_images/Stack_glossy_photo_prints_3ba30edf.png";
 import calendarImage from "@assets/generated_images/Modern_wall_calendar_2025_6ee0d16e.png";
 import { FAQChatbot } from "@/components/faq-chatbot";
+import { useAuth } from "@/hooks/use-auth";
 
 const services = [
   {
@@ -54,6 +55,12 @@ const features = [
 ];
 
 export default function HomePage() {
+  const { user, isLoading } = useAuth();
+
+  if (!isLoading && user) {
+    return <Redirect to="/catalog" />;
+  }
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: 'smooth' });
@@ -61,29 +68,28 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <img src={logoSvg} alt="Netprint" className="h-8" />
+            <img src={sprinterLogo} alt="S-Printer" className="h-8" />
             <nav className="hidden md:flex gap-6">
               <button 
                 onClick={() => scrollToSection('services')}
-                className="text-sm hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="nav-services"
               >
                 Услуги
               </button>
               <button 
                 onClick={() => scrollToSection('features')}
-                className="text-sm hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="nav-features"
               >
                 Преимущества
               </button>
               <button 
                 onClick={() => scrollToSection('faq')}
-                className="text-sm hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="nav-faq"
               >
                 FAQ
@@ -99,20 +105,19 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 to-primary/5 py-20 md:py-32 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary/10 via-primary/5 to-background py-20 md:py-32 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                Национальный сервис цифровой фотопечати №1 в России
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+                Профессиональная фотопечать в Беларуси
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-100">
-                Профессиональная печать фотографий, альбомов и календарей с 2004 года
+              <p className="text-xl md:text-2xl text-muted-foreground">
+                Печать фотографий, фотоальбомов и календарей — быстро и качественно
               </p>
             </div>
             
-            <div className="flex flex-wrap gap-3 justify-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
+            <div className="flex flex-wrap gap-3 justify-center">
               <Badge variant="secondary" className="text-base px-4 py-2">
                 <Award className="h-4 w-4 mr-2" />
                 Высокое качество
@@ -127,7 +132,7 @@ export default function HomePage() {
               </Badge>
             </div>
 
-            <div className="flex flex-wrap gap-4 justify-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+            <div className="flex flex-wrap gap-4 justify-center">
               <Link href="/auth">
                 <Button size="lg" className="text-lg px-8" data-testid="button-get-started">
                   Начать заказ
@@ -147,7 +152,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services Section */}
       <section id="services" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -161,8 +165,7 @@ export default function HomePage() {
             {services.map((service, index) => (
               <Card 
                 key={service.title}
-                className="hover-elevate active-elevate-2 transition-all overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700"
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="hover-elevate overflow-hidden"
                 data-testid={`card-service-${index}`}
               >
                 <div className="aspect-video overflow-hidden">
@@ -174,8 +177,8 @@ export default function HomePage() {
                 </div>
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <service.icon className="h-6 w-6 text-primary" />
+                    <div className="p-2 rounded-md bg-primary/10">
+                      <service.icon className="h-5 w-5 text-primary" />
                     </div>
                     <CardTitle>{service.title}</CardTitle>
                   </div>
@@ -189,7 +192,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -203,8 +205,7 @@ export default function HomePage() {
             {features.map((feature, index) => (
               <Card 
                 key={feature.title}
-                className="text-center hover-elevate transition-all animate-in fade-in slide-in-from-bottom-4 duration-700"
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="text-center"
                 data-testid={`card-feature-${index}`}
               >
                 <CardHeader>
@@ -222,7 +223,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section id="faq" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -236,14 +236,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-card border-t py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <img src={logoSvg} alt="Netprint" className="h-8 mb-4" />
+              <img src={sprinterLogo} alt="S-Printer" className="h-8 mb-4" />
               <p className="text-sm text-muted-foreground">
-                Национальный сервис цифровой фотопечати №1 в России по количеству пользователей
+                Профессиональная фотопечать в Беларуси
               </p>
             </div>
             
@@ -252,26 +251,26 @@ export default function HomePage() {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <p>г. Москва, Волгоградский проспект, д. 42, ком. 6.3-23H</p>
+                  <p>Беларусь</p>
                 </div>
               </div>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Ссылки</h3>
+              <h3 className="font-semibold mb-4">Навигация</h3>
               <div className="space-y-2">
-                <Link href="/auth" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/auth" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Войти
                 </Link>
                 <button 
                   onClick={() => scrollToSection('services')}
-                  className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                  className="block text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
                 >
                   Услуги
                 </button>
                 <button 
                   onClick={() => scrollToSection('features')}
-                  className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                  className="block text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
                 >
                   Преимущества
                 </button>
@@ -280,7 +279,7 @@ export default function HomePage() {
           </div>
           
           <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2004-2026 Netprint. Все права защищены.</p>
+            <p>© 2026 S-Printer. Все права защищены.</p>
           </div>
         </div>
       </footer>

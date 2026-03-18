@@ -7,12 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Camera, Mail, Lock } from "lucide-react";
-import logoSvg from "@assets/netprint-logo.svg";
+import sprinterLogo from "@assets/sprinter-logo.svg";
 
 export default function AuthPage() {
   const { user, loginMutation, logoutMutation, registerMutation } = useAuth();
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({ username: "", password: "", confirmPassword: "" });
+
+  if (user) {
+    return <Redirect to="/catalog" />;
+  }
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,40 +36,23 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Forms */}
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-2">
-            <img src={logoSvg} alt="Netprint" className="h-16 mx-auto" />
-            <h1 className="text-3xl font-bold">Добро пожаловать</h1>
-            {user ? (
-              <div className="space-y-2 pt-2">
-                <p className="text-muted-foreground">Вы авторизованы как <span className="font-semibold text-foreground">{user.username}</span></p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => logoutMutation.mutate()}
-                  disabled={logoutMutation.isPending}
-                  className="w-full"
-                  data-testid="button-logout-current"
-                >
-                  {logoutMutation.isPending ? "Выход..." : "Выход из аккаунта"}
-                </Button>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">Войдите или создайте аккаунт</p>
-            )}
+          <div className="text-center space-y-3">
+            <img src={sprinterLogo} alt="S-Printer" className="h-14 mx-auto" />
+            <h1 className="text-2xl font-bold">Добро пожаловать</h1>
+            <p className="text-muted-foreground">Войдите или создайте аккаунт</p>
           </div>
 
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2" style={{ opacity: user ? 0.5 : 1, pointerEvents: user ? "none" : "auto" }}>
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login" data-testid="tab-login">Вход</TabsTrigger>
               <TabsTrigger value="register" data-testid="tab-register">Регистрация</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
               <Card>
-                <form onSubmit={handleLogin} style={{ opacity: user ? 0.5 : 1, pointerEvents: user ? "none" : "auto" }}>
+                <form onSubmit={handleLogin}>
                   <CardHeader>
                     <CardTitle>Вход в систему</CardTitle>
                     <CardDescription>Введите ваши учетные данные</CardDescription>
@@ -120,7 +107,7 @@ export default function AuthPage() {
 
             <TabsContent value="register">
               <Card>
-                <form onSubmit={handleRegister} style={{ opacity: user ? 0.5 : 1, pointerEvents: user ? "none" : "auto" }}>
+                <form onSubmit={handleRegister}>
                   <CardHeader>
                     <CardTitle>Создать аккаунт</CardTitle>
                     <CardDescription>Заполните форму для регистрации</CardDescription>
@@ -195,28 +182,28 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Right side - Hero */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#AA14F0] to-[#AA14F0]/80 items-center justify-center p-12 text-primary-foreground">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary to-primary/70 items-center justify-center p-12 text-white">
         <div className="max-w-md space-y-6 text-center">
-          <Camera className="w-24 h-24 mx-auto opacity-90" />
-          <p className="text-xl opacity-90">
-            Профессиональная печать фотографий, фотоальбомов и календарей
+          <Camera className="w-20 h-20 mx-auto opacity-90" />
+          <h2 className="text-2xl font-bold">Профессиональная фотопечать</h2>
+          <p className="text-lg opacity-90">
+            Фотоальбомы, фотографии и календари — быстро и качественно
           </p>
           <div className="space-y-3 text-left">
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-primary-foreground mt-2" />
+              <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
               <p>Высокое качество печати</p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-primary-foreground mt-2" />
-              <p>Быстрая доставка по всей России</p>
+              <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
+              <p>Быстрая доставка</p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-primary-foreground mt-2" />
+              <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
               <p>Услуги профессиональных фотографов</p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-primary-foreground mt-2" />
+              <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
               <p>Тысячи довольных клиентов</p>
             </div>
           </div>
