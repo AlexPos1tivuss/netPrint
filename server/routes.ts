@@ -122,7 +122,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(400).send("Неизвестный тип продукта");
       }
-      if (result.data.totalPrice < product.basePrice) {
+
+      let minimumPrice = product.basePrice;
+
+      // For photographer orders, add photographer's hourly rate to minimum
+      if (result.data.photoSource === 'photographer' && result.data.photographerId) {
+        const photographer = await storage.getPhotographer(result.data.photographerId);
+        if (!photographer) {
+          return res.status(400).send("Фотограф не найден");
+        }
+        minimumPrice += photographer.pricePerHour;
+      }
+
+      if (result.data.totalPrice < minimumPrice) {
         return res.status(400).send("Цена заказа ниже минимально допустимой");
       }
       if (result.data.totalPrice > 10_000_000) {
