@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Calendar, LogOut, MapPin, User, Package, Shield, ImageIcon } from "lucide-react";
+import { ArrowLeft, Calendar, LogOut, MapPin, User, Package, Shield, ImageIcon, ChevronDown, ChevronUp, Loader2, ExternalLink } from "lucide-react";
 import { OrderWithPhotos, ProductType } from "@shared/schema";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 
@@ -15,6 +16,75 @@ const statusMap: Record<string, {label: string, variant: 'default' | 'secondary'
   ready: { label: 'Готов к выдаче', variant: 'outline' },
   delivered: { label: 'Доставлен', variant: 'outline' },
 };
+
+type SignedPhoto = { id: string; signedUrl: string };
+
+function OrderPhotosSection({ orderId, photoCount }: { orderId: string; photoCount: number }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const { data: signedPhotos, isLoading } = useQuery<SignedPhoto[]>({
+    queryKey: ['/api/orders', orderId, 'photos', 'signed'],
+    enabled: expanded,
+  });
+
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setExpanded(prev => !prev)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          data-testid={`button-photos-${orderId}`}
+        >
+          <ImageIcon className="w-4 h-4 flex-shrink-0" />
+          <span>Фотографий: {photoCount}</span>
+          {expanded ? (
+            <ChevronUp className="w-3 h-3" />
+          ) : (
+            <ChevronDown className="w-3 h-3" />
+          )}
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="mt-3">
+          {isLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Загрузка фотографий...</span>
+            </div>
+          ) : signedPhotos && signedPhotos.length > 0 ? (
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+              {signedPhotos.map((photo) => (
+                <a
+                  key={photo.id}
+                  href={photo.signedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative block aspect-square rounded-md overflow-hidden hover-elevate"
+                  title="Открыть в полном размере"
+                >
+                  <img
+                    src={photo.signedUrl}
+                    alt="Фото заказа"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <ExternalLink className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Не удалось загрузить фотографии</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ProfilePage() {
   const { user, logoutMutation } = useAuth();
@@ -161,10 +231,7 @@ export default function ProfilePage() {
                         {order.photoSource === 'upload' && order.photos && order.photos.length > 0 && (
                           <>
                             <Separator className="my-3" />
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <ImageIcon className="w-4 h-4 flex-shrink-0" />
-                              <span>Загружено фотографий: {order.photos.length}</span>
-                            </div>
+                            <OrderPhotosSection orderId={order.id} photoCount={order.photos.length} />
                           </>
                         )}
 

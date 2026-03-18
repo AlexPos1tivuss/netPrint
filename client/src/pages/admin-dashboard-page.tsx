@@ -46,6 +46,11 @@ export default function AdminDashboardPage() {
     queryKey: ['/api/products'],
   });
 
+  const { data: signedPhotos, isLoading: signedPhotosLoading } = useQuery<{id: string, signedUrl: string}[]>({
+    queryKey: ['/api/orders', selectedOrder?.id, 'photos', 'signed'],
+    enabled: !!selectedOrder && selectedOrder.photoSource === 'upload' && (selectedOrder.photos?.length ?? 0) > 0,
+  });
+
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
       await apiRequest("PATCH", `/api/admin/orders/${orderId}/status`, { status });
@@ -526,20 +531,39 @@ export default function AdminDashboardPage() {
                     <div className="space-y-3">
                       <h3 className="font-semibold text-sm flex items-center gap-2">
                         <Image className="h-4 w-4" />
-                        Загруженные фотографии
+                        Загруженные фотографии ({selectedOrder.photos.length})
                       </h3>
-                      <div className="bg-muted rounded-md p-3 text-sm">
-                        <p className="text-muted-foreground mb-2">
-                          Количество файлов: <span className="font-medium text-foreground">{selectedOrder.photos.length}</span>
-                        </p>
-                        <div className="space-y-1 max-h-32 overflow-y-auto">
-                          {selectedOrder.photos.map((photo) => (
-                            <p key={photo.id} className="font-mono text-xs text-muted-foreground truncate">
-                              {photo.photoPath.split('/').pop()}
-                            </p>
+                      {signedPhotosLoading ? (
+                        <div className="grid grid-cols-3 gap-2">
+                          {selectedOrder.photos.map((_, i) => (
+                            <div key={i} className="aspect-square bg-muted rounded-md animate-pulse" />
                           ))}
                         </div>
-                      </div>
+                      ) : signedPhotos && signedPhotos.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-2">
+                          {signedPhotos.map((photo) => (
+                            <a
+                              key={photo.id}
+                              href={photo.signedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block aspect-square rounded-md overflow-hidden hover-elevate"
+                              title="Открыть в полном размере"
+                            >
+                              <img
+                                src={photo.signedUrl}
+                                alt="Фото заказа"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Не удалось загрузить превью фотографий</p>
+                      )}
                     </div>
                   </>
                 )}
