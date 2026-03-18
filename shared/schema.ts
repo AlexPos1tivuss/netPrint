@@ -139,6 +139,7 @@ export type Photographer = typeof photographers.$inferSelect;
 export type ProductType = typeof productTypes.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderPhoto = typeof orderPhotos.$inferSelect;
+export type OrderWithPhotos = Order & { photos: OrderPhoto[] };
 export type InsertPhotographer = z.infer<typeof insertPhotographerSchema>;
 export type InsertProductType = z.infer<typeof insertProductTypeSchema>;
 export type UpdateProductType = z.infer<typeof updateProductTypeSchema>;

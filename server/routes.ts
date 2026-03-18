@@ -4,7 +4,7 @@ import { z } from "zod";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertOrderSchema, updateProductTypeSchema } from "@shared/schema";
-import { generateSignedUploadUrl } from "./object-storage";
+import { generateSignedUploadUrl, getSignedDownloadUrl } from "./object-storage";
 
 const orderStatusSchema = z.enum(["pending", "processing", "ready", "delivered"]);
 
@@ -95,7 +95,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/orders", requireAuth, async (req, res) => {
     try {
       const orders = await storage.getOrdersByUser(req.user!.id);
-      res.json(orders);
+      const ordersWithPhotos = await Promise.all(
+        orders.map(async (order) => ({
+          ...order,
+          photos: await storage.getOrderPhotos(order.id),
+        }))
+      );
+      res.json(ordersWithPhotos);
     } catch (error) {
       console.error("Error fetching orders:", error);
       res.status(500).send("Ошибка получения заказов");
@@ -170,10 +176,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).send("Доступ запрещен");
       }
 
-      res.json(order);
+      const photos = await storage.getOrderPhotos(order.id);
+      res.json({ ...order, photos });
     } catch (error) {
       console.error("Error fetching order:", error);
       res.status(500).send("Ошибка получения заказа");
+    }
+  });
+
+  app.get("/api/orders/:id/photos/signed", requireAuth, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).send("Заказ не найден");
+      }
+
+      if (order.userId !== req.user!.id && !req.user!.isAdmin) {
+        return res.status(403).send("Доступ запрещен");
+      }
+
+      const photos = await storage.getOrderPhotos(order.id);
+      const signedPhotos = await Promise.all(
+        photos.map(async (photo) => ({
+          id: photo.id,
+          signedUrl: await getSignedDownloadUrl(photo.photoPath),
+        }))
+      );
+      res.json(signedPhotos);
+    } catch (error) {
+      console.error("Error generating signed photo URLs:", error);
+      res.status(500).send("Ошибка получения ссылок на фотографии");
     }
   });
 
@@ -191,7 +223,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/orders", requireAdmin, async (req, res) => {
     try {
       const orders = await storage.getAllOrders();
-      res.json(orders);
+      const ordersWithPhotos = await Promise.all(
+        orders.map(async (order) => ({
+          ...order,
+          photos: await storage.getOrderPhotos(order.id),
+        }))
+      );
+      res.json(ordersWithPhotos);
     } catch (error) {
       console.error("Error fetching all orders:", error);
       res.status(500).send("Ошибка получения всех заказов");

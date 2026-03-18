@@ -8,7 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link, useLocation } from "wouter";
-import { Camera, User, LogOut, Shield, Settings } from "lucide-react";
+import { Camera, User, LogOut, Shield, Settings, AlertCircle } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +43,7 @@ export default function CatalogPage() {
   const { toast } = useToast();
   const [editingProduct, setEditingProduct] = useState<ProductType | null>(null);
 
-  const { data: products, isLoading } = useQuery<ProductType[]>({
+  const { data: products, isLoading, isError } = useQuery<ProductType[]>({
     queryKey: ["/api/products"],
   });
 
@@ -173,6 +173,14 @@ export default function CatalogPage() {
                   </CardHeader>
                 </Card>
               ))}
+            </div>
+          ) : isError ? (
+            <div className="max-w-5xl mx-auto flex flex-col items-center justify-center py-16 text-center">
+              <div className="p-4 rounded-full bg-destructive/10 mb-4">
+                <AlertCircle className="w-10 h-10 text-destructive" />
+              </div>
+              <h2 className="text-xl font-semibold mb-2">Не удалось загрузить каталог</h2>
+              <p className="text-muted-foreground mb-4">Проверьте подключение к интернету и попробуйте обновить страницу</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">

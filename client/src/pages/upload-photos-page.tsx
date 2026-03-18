@@ -2,26 +2,28 @@ import { useState } from "react";
 import { useLocation, Link, Redirect } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Upload, X, Check, ImageIcon } from "lucide-react";
+import { ArrowLeft, Upload, X, Check, ImageIcon, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 
+type FileWithId = { id: string; file: File };
+type FileStatus = 'idle' | 'uploading' | 'done' | 'error';
+
 export default function UploadPhotosPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<FileWithId[]>([]);
+  const [fileStatuses, setFileStatuses] = useState<Record<string, FileStatus>>({});
   const [uploading, setUploading] = useState(false);
 
   const params = new URLSearchParams(window.location.search);
   const productType = params.get('product') || '';
   const price = params.get('price') || '0';
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const totalFiles = uploadedFiles.length + files.length;
-    
+  const addFiles = (newFiles: File[]) => {
+    const totalFiles = uploadedFiles.length + newFiles.length;
     if (totalFiles > 20) {
       toast({
         title: "Превышен лимит",
@@ -30,8 +32,17 @@ export default function UploadPhotosPage() {
       });
       return;
     }
+    const entries: FileWithId[] = newFiles.map(file => ({
+      id: `${file.name}-${file.size}-${file.lastModified}-${Math.random()}`,
+      file,
+    }));
+    setUploadedFiles(prev => [...prev, ...entries]);
+  };
 
-    setUploadedFiles(prev => [...prev, ...files]);
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    addFiles(files);
+    e.target.value = '';
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -39,20 +50,16 @@ export default function UploadPhotosPage() {
     const files = Array.from(e.dataTransfer.files).filter(
       f => f.type === 'image/jpeg' || f.type === 'image/png'
     );
-    const totalFiles = uploadedFiles.length + files.length;
-    if (totalFiles > 20) {
-      toast({
-        title: "Превышен лимит",
-        description: "Максимум 20 фотографий",
-        variant: "destructive",
-      });
-      return;
-    }
-    setUploadedFiles(prev => [...prev, ...files]);
+    addFiles(files);
   };
 
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  const removeFile = (id: string) => {
+    setUploadedFiles(prev => prev.filter(f => f.id !== id));
+    setFileStatuses(prev => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
   };
 
   const createOrderMutation = useMutation({
@@ -112,26 +119,31 @@ export default function UploadPhotosPage() {
     try {
       const uploadedPaths: string[] = [];
       
-      for (const file of uploadedFiles) {
-        const urlResponse = await apiRequest("POST", "/api/upload/signed-url", {
-          fileName: file.name,
-          contentType: file.type,
-        });
-        const { signedUrl, filePath } = await urlResponse.json();
-        
-        const uploadRes = await fetch(signedUrl, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': file.type,
-          },
-          body: file,
-        });
+      for (const { id, file } of uploadedFiles) {
+        setFileStatuses(prev => ({ ...prev, [id]: 'uploading' }));
+        try {
+          const urlResponse = await apiRequest("POST", "/api/upload/signed-url", {
+            fileName: file.name,
+            contentType: file.type,
+          });
+          const { signedUrl, filePath } = await urlResponse.json();
+          
+          const uploadRes = await fetch(signedUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': file.type },
+            body: file,
+          });
 
-        if (!uploadRes.ok) {
-          throw new Error(`Upload failed for ${file.name}`);
+          if (!uploadRes.ok) {
+            throw new Error(`Upload failed for ${file.name}`);
+          }
+          
+          uploadedPaths.push(filePath);
+          setFileStatuses(prev => ({ ...prev, [id]: 'done' }));
+        } catch (err) {
+          setFileStatuses(prev => ({ ...prev, [id]: 'error' }));
+          throw err;
         }
-        
-        uploadedPaths.push(filePath);
       }
       
       createOrderMutation.mutate(uploadedPaths);
@@ -163,6 +175,22 @@ export default function UploadPhotosPage() {
   if (!productType || !hasValidConfig) {
     return <Redirect to="/catalog" />;
   }
+
+  const getStatusIcon = (id: string) => {
+    const status = fileStatuses[id];
+    if (status === 'uploading') return <Loader2 className="w-3 h-3 animate-spin text-white" />;
+    if (status === 'done') return <Check className="w-3 h-3 text-white" />;
+    if (status === 'error') return <AlertCircle className="w-3 h-3 text-white" />;
+    return null;
+  };
+
+  const getStatusOverlayColor = (id: string) => {
+    const status = fileStatuses[id];
+    if (status === 'uploading') return 'bg-primary/60';
+    if (status === 'done') return 'bg-green-500/60';
+    if (status === 'error') return 'bg-destructive/60';
+    return '';
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -241,11 +269,11 @@ export default function UploadPhotosPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      {uploadedFiles.map((file, index) => (
+                      {uploadedFiles.map(({ id, file }) => (
                         <div 
-                          key={index} 
+                          key={id} 
                           className="relative group aspect-square"
-                          data-testid={`photo-${index}`}
+                          data-testid={`photo-${id}`}
                         >
                           <img
                             src={URL.createObjectURL(file)}
@@ -253,20 +281,27 @@ export default function UploadPhotosPage() {
                             className="w-full h-full object-cover rounded-md"
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md" />
-                          <button
-                            onClick={() => removeFile(index)}
-                            className="absolute top-1 right-1 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                            data-testid={`button-remove-${index}`}
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
+                          {fileStatuses[id] && (
+                            <div className={`absolute inset-0 ${getStatusOverlayColor(id)} rounded-md flex items-center justify-center`}>
+                              {getStatusIcon(id)}
+                            </div>
+                          )}
+                          {!isProcessing && (
+                            <button
+                              onClick={() => removeFile(id)}
+                              className="absolute top-1 right-1 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              data-testid={`button-remove-${id}`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
                           <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm rounded-b-md px-2 py-1 text-xs text-white truncate opacity-0 group-hover:opacity-100 transition-opacity">
                             {file.name}
                           </div>
                         </div>
                       ))}
 
-                      {uploadedFiles.length < 20 && (
+                      {uploadedFiles.length < 20 && !isProcessing && (
                         <label 
                           htmlFor="file-upload-more"
                           className="aspect-square border-2 border-dashed border-border rounded-md flex flex-col items-center justify-center cursor-pointer hover-elevate text-muted-foreground"
@@ -318,7 +353,12 @@ export default function UploadPhotosPage() {
                       data-testid="button-create-order"
                     >
                       {isProcessing ? (
-                        uploading ? "Загрузка фото..." : "Создание заказа..."
+                        uploading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Загрузка фото...
+                          </>
+                        ) : "Создание заказа..."
                       ) : (
                         <>
                           <Check className="mr-2 h-4 w-4" />

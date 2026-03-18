@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Package, Users, TrendingUp, DollarSign, Clock, LogOut, Shield, Calendar, MapPin, User as UserIcon, Camera, Image } from "lucide-react";
-import type { Order, User, ProductType } from "@shared/schema";
+import type { OrderWithPhotos, User, ProductType } from "@shared/schema";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -23,25 +23,18 @@ const statusMap: Record<string, {label: string, variant: 'default' | 'secondary'
   delivered: { label: 'Доставлен', variant: 'outline' },
 };
 
-const productTypeMap: Record<string, string> = {
-  photoalbum: 'Фотоальбом',
-  photos: 'Фотографии',
-  prints: 'Фотографии',
-  calendar: 'Календарь',
-};
-
 type SafeUser = Omit<User, 'password'>;
 
 export default function AdminDashboardPage() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderWithPhotos | null>(null);
 
   if (user && !user.isAdmin) {
     return <Redirect to="/catalog" />;
   }
 
-  const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
+  const { data: orders, isLoading: ordersLoading } = useQuery<OrderWithPhotos[]>({
     queryKey: ['/api/admin/orders'],
   });
 
@@ -68,6 +61,14 @@ export default function AdminDashboardPage() {
       toast({ title: "Ошибка", description: "Не удалось обновить статус", variant: "destructive" });
     },
   });
+
+  const getProductDisplayName = (productType: string) => {
+    if (products) {
+      const found = products.find(p => p.name === productType);
+      if (found) return found.displayName;
+    }
+    return productType;
+  };
 
   const stats = orders ? {
     totalOrders: orders.length,
@@ -242,7 +243,7 @@ export default function AdminDashboardPage() {
                                 #{order.id.slice(0, 8)}
                               </TableCell>
                               <TableCell className="font-medium">
-                                {productTypeMap[order.productType] || order.productType}
+                                {getProductDisplayName(order.productType)}
                               </TableCell>
                               <TableCell className="text-sm text-muted-foreground whitespace-nowrap hidden md:table-cell">
                                 {new Date(order.createdAt).toLocaleDateString('ru-RU', {
@@ -485,7 +486,7 @@ export default function AdminDashboardPage() {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-muted-foreground">Продукт</p>
-                      <p className="font-medium">{productTypeMap[selectedOrder.productType] || selectedOrder.productType}</p>
+                      <p className="font-medium">{getProductDisplayName(selectedOrder.productType)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Итого</p>
@@ -502,18 +503,42 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                {selectedOrder.productConfig && Object.keys(selectedOrder.productConfig as object).length > 0 && (
+                {selectedOrder.productConfig != null && typeof selectedOrder.productConfig === 'object' && Object.keys(selectedOrder.productConfig as Record<string, unknown>).length > 0 && (
                   <>
                     <Separator />
                     <div className="space-y-3">
                       <h3 className="font-semibold text-sm">Конфигурация продукта</h3>
                       <div className="bg-muted rounded-md p-3 text-sm space-y-1">
-                        {Object.entries(selectedOrder.productConfig as Record<string, unknown>).map(([key, value]) => (
+                        {Object.entries(selectedOrder.productConfig as Record<string, string | number | boolean | null>).map(([key, value]) => (
                           <div key={key} className="flex justify-between">
                             <span className="text-muted-foreground capitalize">{key}</span>
                             <span className="font-medium">{String(value)}</span>
                           </div>
                         ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {selectedOrder.photoSource === 'upload' && selectedOrder.photos && selectedOrder.photos.length > 0 && (
+                  <>
+                    <Separator />
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-sm flex items-center gap-2">
+                        <Image className="h-4 w-4" />
+                        Загруженные фотографии
+                      </h3>
+                      <div className="bg-muted rounded-md p-3 text-sm">
+                        <p className="text-muted-foreground mb-2">
+                          Количество файлов: <span className="font-medium text-foreground">{selectedOrder.photos.length}</span>
+                        </p>
+                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                          {selectedOrder.photos.map((photo) => (
+                            <p key={photo.id} className="font-mono text-xs text-muted-foreground truncate">
+                              {photo.photoPath.split('/').pop()}
+                            </p>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </>

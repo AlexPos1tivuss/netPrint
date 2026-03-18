@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, User, Star, Check } from "lucide-react";
+import { ArrowLeft, Calendar as CalendarIcon, MapPin, User, Star, Check, AlertCircle } from "lucide-react";
 import { Photographer } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -37,7 +37,7 @@ export default function PhotographerSelectionPage() {
   const [location, setLocation] = useState<string>('');
   const [coordinates, setCoordinates] = useState<{lat: number, lng: number}>({ lat: 53.9045, lng: 27.5615 });
 
-  const { data: photographers, isLoading } = useQuery<Photographer[]>({
+  const { data: photographers, isLoading, isError } = useQuery<Photographer[]>({
     queryKey: ['/api/photographers'],
   });
 
@@ -175,6 +175,14 @@ export default function PhotographerSelectionPage() {
                     {[1, 2, 3].map(i => (
                       <div key={i} className="h-24 bg-muted rounded-md animate-pulse" />
                     ))}
+                  </div>
+                ) : isError ? (
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <div className="p-4 rounded-full bg-destructive/10 mb-4">
+                      <AlertCircle className="w-8 h-8 text-destructive" />
+                    </div>
+                    <p className="font-semibold mb-1">Не удалось загрузить список фотографов</p>
+                    <p className="text-sm text-muted-foreground">Проверьте подключение и попробуйте обновить страницу</p>
                   </div>
                 ) : (
                   <RadioGroup value={selectedPhotographer} onValueChange={setSelectedPhotographer}>

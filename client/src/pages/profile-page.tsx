@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Calendar, LogOut, MapPin, User, Package, Shield } from "lucide-react";
-import { Order } from "@shared/schema";
+import { ArrowLeft, Calendar, LogOut, MapPin, User, Package, Shield, ImageIcon } from "lucide-react";
+import { OrderWithPhotos, ProductType } from "@shared/schema";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 
 const statusMap: Record<string, {label: string, variant: 'default' | 'secondary' | 'destructive' | 'outline'}> = {
@@ -16,19 +16,24 @@ const statusMap: Record<string, {label: string, variant: 'default' | 'secondary'
   delivered: { label: 'Доставлен', variant: 'outline' },
 };
 
-const productTypeMap: Record<string, string> = {
-  photoalbum: 'Фотоальбом',
-  photos: 'Фотографии',
-  prints: 'Фотографии',
-  calendar: 'Календарь',
-};
-
 export default function ProfilePage() {
   const { user, logoutMutation } = useAuth();
-  
-  const { data: orders, isLoading } = useQuery<Order[]>({
+
+  const { data: orders, isLoading } = useQuery<OrderWithPhotos[]>({
     queryKey: ['/api/orders'],
   });
+
+  const { data: products } = useQuery<ProductType[]>({
+    queryKey: ['/api/products'],
+  });
+
+  const getProductDisplayName = (productType: string) => {
+    if (products) {
+      const found = products.find(p => p.name === productType);
+      if (found) return found.displayName;
+    }
+    return productType;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,9 +51,9 @@ export default function ProfilePage() {
                 </Button>
               </Link>
             )}
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => logoutMutation.mutate()}
               data-testid="button-logout"
             >
@@ -119,15 +124,15 @@ export default function ProfilePage() {
                             </div>
                             <div>
                               <h3 className="font-semibold" data-testid={`text-product-${order.id}`}>
-                                {productTypeMap[order.productType] || order.productType}
+                                {getProductDisplayName(order.productType)}
                               </h3>
                               <p className="text-sm text-muted-foreground">
                                 Заказ #{order.id.slice(0, 8)}
                               </p>
                             </div>
                           </div>
-                          <Badge 
-                            variant={statusMap[order.status]?.variant || 'default'} 
+                          <Badge
+                            variant={statusMap[order.status]?.variant || 'default'}
                             data-testid={`status-${order.id}`}
                           >
                             {statusMap[order.status]?.label || order.status}
@@ -152,6 +157,16 @@ export default function ProfilePage() {
                             </span>
                           </div>
                         </div>
+
+                        {order.photoSource === 'upload' && order.photos && order.photos.length > 0 && (
+                          <>
+                            <Separator className="my-3" />
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <ImageIcon className="w-4 h-4 flex-shrink-0" />
+                              <span>Загружено фотографий: {order.photos.length}</span>
+                            </div>
+                          </>
+                        )}
 
                         {order.photoSource === 'photographer' && order.photographerId && (
                           <>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRoute, useLocation, Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -8,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Upload, Camera } from "lucide-react";
-import type { PhotoalbumConfig, PhotosConfig, CalendarConfig } from "@shared/schema";
+import { ArrowLeft, Upload, Camera, Loader2 } from "lucide-react";
+import type { PhotoalbumConfig, PhotosConfig, CalendarConfig, ProductType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
@@ -56,7 +57,11 @@ export default function ProductConfigPage() {
   const [, params] = useRoute("/product/:type");
   const [, navigate] = useLocation();
   const productType = params?.type || '';
-  
+
+  const { data: apiProducts, isLoading: productsLoading } = useQuery<ProductType[]>({
+    queryKey: ['/api/products'],
+  });
+
   const [photoSource, setPhotoSource] = useState<'upload' | 'photographer'>('upload');
   
   const [photoalbumConfig, setPhotoalbumConfig] = useState<PhotoalbumConfig>({
@@ -103,7 +108,19 @@ export default function ProductConfigPage() {
     }
   };
 
-  if (!VALID_TYPES.includes(productType)) {
+  if (productsLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const validTypes = apiProducts
+    ? apiProducts.map(p => p.name)
+    : VALID_TYPES;
+
+  if (!validTypes.includes(productType)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
