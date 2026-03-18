@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Upload, Camera } from "lucide-react";
-import { PhotoalbumConfig, PhotosConfig, CalendarConfig } from "@shared/schema";
+import type { PhotoalbumConfig, PhotosConfig, CalendarConfig } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
@@ -55,7 +55,6 @@ const isPhotosType = (type: string) => type === 'photos' || type === 'prints';
 export default function ProductConfigPage() {
   const [, params] = useRoute("/product/:type");
   const [, navigate] = useLocation();
-  const { toast } = useToast();
   const productType = params?.type || '';
   
   const [photoSource, setPhotoSource] = useState<'upload' | 'photographer'>('upload');
@@ -176,7 +175,10 @@ export default function ProductConfigPage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
                     <Label className="font-medium">Размер</Label>
-                    <RadioGroup value={photoalbumConfig.size} onValueChange={(v: any) => setPhotoalbumConfig({...photoalbumConfig, size: v})}>
+                    <RadioGroup
+                      value={photoalbumConfig.size}
+                      onValueChange={(v) => setPhotoalbumConfig(prev => ({...prev, size: v as PhotoalbumConfig['size']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="small" id="size-small" data-testid="radio-size-small" />
                         <Label htmlFor="size-small" className="font-normal cursor-pointer">Маленький (15×15 см) — 500 ₽</Label>
@@ -196,7 +198,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Тип обложки</Label>
-                    <RadioGroup value={photoalbumConfig.coverType} onValueChange={(v: any) => setPhotoalbumConfig({...photoalbumConfig, coverType: v})}>
+                    <RadioGroup
+                      value={photoalbumConfig.coverType}
+                      onValueChange={(v) => setPhotoalbumConfig(prev => ({...prev, coverType: v as PhotoalbumConfig['coverType']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="soft" id="cover-soft" data-testid="radio-cover-soft" />
                         <Label htmlFor="cover-soft" className="font-normal cursor-pointer">Мягкая — 0 ₽</Label>
@@ -216,7 +221,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label htmlFor="pages" className="font-medium">Количество страниц (50 ₽/страница)</Label>
-                    <Select value={photoalbumConfig.pages.toString()} onValueChange={(v) => setPhotoalbumConfig({...photoalbumConfig, pages: parseInt(v)})}>
+                    <Select
+                      value={photoalbumConfig.pages.toString()}
+                      onValueChange={(v) => setPhotoalbumConfig(prev => ({...prev, pages: parseInt(v)}))}
+                    >
                       <SelectTrigger id="pages" data-testid="select-pages">
                         <SelectValue />
                       </SelectTrigger>
@@ -233,7 +241,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Тип бумаги</Label>
-                    <RadioGroup value={photoalbumConfig.paperType} onValueChange={(v: any) => setPhotoalbumConfig({...photoalbumConfig, paperType: v})}>
+                    <RadioGroup
+                      value={photoalbumConfig.paperType}
+                      onValueChange={(v) => setPhotoalbumConfig(prev => ({...prev, paperType: v as PhotoalbumConfig['paperType']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="matte" id="paper-matte" data-testid="radio-paper-matte" />
                         <Label htmlFor="paper-matte" className="font-normal cursor-pointer">Матовая — 0 ₽</Label>
@@ -256,7 +267,10 @@ export default function ProductConfigPage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
                     <Label className="font-medium">Размер фотографии</Label>
-                    <RadioGroup value={photosConfig.size} onValueChange={(v: any) => setPhotosConfig({...photosConfig, size: v})}>
+                    <RadioGroup
+                      value={photosConfig.size}
+                      onValueChange={(v) => setPhotosConfig(prev => ({...prev, size: v as PhotosConfig['size']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="10x15" id="photo-10x15" data-testid="radio-size-10x15" />
                         <Label htmlFor="photo-10x15" className="font-normal cursor-pointer">10×15 см — 10 ₽/шт</Label>
@@ -276,7 +290,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label htmlFor="quantity" className="font-medium">Количество фотографий</Label>
-                    <Select value={photosConfig.quantity.toString()} onValueChange={(v) => setPhotosConfig({...photosConfig, quantity: parseInt(v)})}>
+                    <Select
+                      value={photosConfig.quantity.toString()}
+                      onValueChange={(v) => setPhotosConfig(prev => ({...prev, quantity: parseInt(v)}))}
+                    >
                       <SelectTrigger id="quantity" data-testid="select-quantity">
                         <SelectValue />
                       </SelectTrigger>
@@ -294,7 +311,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Тип бумаги</Label>
-                    <RadioGroup value={photosConfig.paperType} onValueChange={(v: any) => setPhotosConfig({...photosConfig, paperType: v})}>
+                    <RadioGroup
+                      value={photosConfig.paperType}
+                      onValueChange={(v) => setPhotosConfig(prev => ({...prev, paperType: v as PhotosConfig['paperType']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="matte" id="photo-paper-matte" data-testid="radio-paper-matte" />
                         <Label htmlFor="photo-paper-matte" className="font-normal cursor-pointer">Матовая — 0 ₽</Label>
@@ -310,7 +330,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Белая рамка</Label>
-                    <RadioGroup value={photosConfig.border ? 'yes' : 'no'} onValueChange={(v) => setPhotosConfig({...photosConfig, border: v === 'yes'})}>
+                    <RadioGroup
+                      value={photosConfig.border ? 'yes' : 'no'}
+                      onValueChange={(v) => setPhotosConfig(prev => ({...prev, border: v === 'yes'}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="no" id="border-no" data-testid="radio-border-no" />
                         <Label htmlFor="border-no" className="font-normal cursor-pointer">Без рамки — 0 ₽</Label>
@@ -333,7 +356,10 @@ export default function ProductConfigPage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
                     <Label className="font-medium">Тип календаря</Label>
-                    <RadioGroup value={calendarConfig.type} onValueChange={(v: any) => setCalendarConfig({...calendarConfig, type: v})}>
+                    <RadioGroup
+                      value={calendarConfig.type}
+                      onValueChange={(v) => setCalendarConfig(prev => ({...prev, type: v as CalendarConfig['type']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="desk" id="type-desk" data-testid="radio-type-desk" />
                         <Label htmlFor="type-desk" className="font-normal cursor-pointer">Настольный — 600 ₽</Label>
@@ -349,7 +375,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Размер</Label>
-                    <RadioGroup value={calendarConfig.size} onValueChange={(v: any) => setCalendarConfig({...calendarConfig, size: v})}>
+                    <RadioGroup
+                      value={calendarConfig.size}
+                      onValueChange={(v) => setCalendarConfig(prev => ({...prev, size: v as CalendarConfig['size']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="A4" id="size-a4" data-testid="radio-size-a4" />
                         <Label htmlFor="size-a4" className="font-normal cursor-pointer">A4 — 0 ₽</Label>
@@ -365,7 +394,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Количество месяцев</Label>
-                    <RadioGroup value={calendarConfig.months.toString()} onValueChange={(v) => setCalendarConfig({...calendarConfig, months: parseInt(v) as 6 | 12})}>
+                    <RadioGroup
+                      value={calendarConfig.months.toString()}
+                      onValueChange={(v) => setCalendarConfig(prev => ({...prev, months: parseInt(v) as CalendarConfig['months']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="6" id="months-6" data-testid="radio-months-6" />
                         <Label htmlFor="months-6" className="font-normal cursor-pointer">6 месяцев — 0 ₽</Label>
@@ -381,7 +413,10 @@ export default function ProductConfigPage() {
 
                   <div className="space-y-3">
                     <Label className="font-medium">Тип переплета</Label>
-                    <RadioGroup value={calendarConfig.binding} onValueChange={(v: any) => setCalendarConfig({...calendarConfig, binding: v})}>
+                    <RadioGroup
+                      value={calendarConfig.binding}
+                      onValueChange={(v) => setCalendarConfig(prev => ({...prev, binding: v as CalendarConfig['binding']}))}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="glued" id="binding-glued" data-testid="radio-binding-glued" />
                         <Label htmlFor="binding-glued" className="font-normal cursor-pointer">Клееный — 0 ₽</Label>
@@ -402,7 +437,7 @@ export default function ProductConfigPage() {
                 <CardDescription>Выберите, как вы хотите предоставить фотографии</CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs value={photoSource} onValueChange={(v: any) => setPhotoSource(v)}>
+                <Tabs value={photoSource} onValueChange={(v) => setPhotoSource(v as 'upload' | 'photographer')}>
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="upload" data-testid="tab-upload">
                       <Upload className="mr-2 h-4 w-4" />
