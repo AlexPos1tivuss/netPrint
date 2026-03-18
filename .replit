@@ -40,3 +40,8 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_database:1.0.0", "javascript_auth_all_persistance:1.0.0", "javascript_object_storage:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+VITE_GOOGLE_MAPS_API_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
