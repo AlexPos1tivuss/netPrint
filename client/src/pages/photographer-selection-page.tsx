@@ -117,7 +117,18 @@ export default function PhotographerSelectionPage() {
     }
   };
 
-  if (!productType) {
+  const storedConfigRaw = sessionStorage.getItem('productConfig');
+  let hasValidConfig = false;
+  try {
+    if (storedConfigRaw) {
+      const parsed = JSON.parse(storedConfigRaw);
+      hasValidConfig = !!parsed && typeof parsed === 'object';
+    }
+  } catch {
+    hasValidConfig = false;
+  }
+
+  if (!productType || !hasValidConfig) {
     return <Redirect to="/catalog" />;
   }
 

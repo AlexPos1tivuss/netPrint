@@ -117,8 +117,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).send("Неверные данные заказа");
       }
 
-      // Validate price is reasonable (client-side calc is trusted but guarded)
-      if (result.data.totalPrice < 0 || result.data.totalPrice > 10_000_000) {
+      // Validate price against trusted server-side product base price
+      const product = await storage.getProductByName(result.data.productType);
+      if (!product) {
+        return res.status(400).send("Неизвестный тип продукта");
+      }
+      if (result.data.totalPrice < product.basePrice) {
+        return res.status(400).send("Цена заказа ниже минимально допустимой");
+      }
+      if (result.data.totalPrice > 10_000_000) {
         return res.status(400).send("Недопустимая цена заказа");
       }
 
