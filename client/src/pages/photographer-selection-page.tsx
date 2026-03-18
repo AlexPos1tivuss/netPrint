@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, Link } from "wouter";
+import { useLocation, Link, Redirect } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,7 +47,12 @@ export default function PhotographerSelectionPage() {
   const createOrderMutation = useMutation({
     mutationFn: async () => {
       const storedConfig = sessionStorage.getItem('productConfig');
-      const productConfig = storedConfig ? JSON.parse(storedConfig).config : {};
+      let productConfig: Record<string, unknown> = {};
+      try {
+        productConfig = storedConfig ? (JSON.parse(storedConfig).config ?? {}) : {};
+      } catch {
+        productConfig = {};
+      }
       
       const res = await apiRequest("POST", "/api/orders", {
         productType,
@@ -112,6 +117,10 @@ export default function PhotographerSelectionPage() {
     }
   };
 
+  if (!productType) {
+    return <Redirect to="/catalog" />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
@@ -125,7 +134,7 @@ export default function PhotographerSelectionPage() {
       <div className="container mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(`/product/${productType}`)} 
+          onClick={() => navigate(productType ? `/product/${productType}` : '/catalog')} 
           className="mb-6"
           data-testid="button-back"
         >
@@ -191,7 +200,7 @@ export default function PhotographerSelectionPage() {
                                     <span className="font-medium">{photographer.rating}/5</span>
                                   </div>
                                   <Badge variant="secondary">
-                                    {photographer.pricePerHour.toLocaleString('ru-RU')} ₽/час
+                                    {photographer.pricePerHour.toLocaleString('ru-RU')} р./час
                                   </Badge>
                                 </div>
                               </div>
@@ -306,12 +315,12 @@ export default function PhotographerSelectionPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Продукт</span>
-                    <span className="font-medium">{productPrice} ₽</span>
+                    <span className="font-medium">{productPrice} р.</span>
                   </div>
                   {selectedPhotographerData && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Фотограф (1ч)</span>
-                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('ru-RU')} ₽</span>
+                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('ru-RU')} р.</span>
                     </div>
                   )}
                 </div>
@@ -342,7 +351,7 @@ export default function PhotographerSelectionPage() {
                   <div className="flex justify-between text-lg font-bold mb-4">
                     <span>Итого</span>
                     <span className="text-primary" data-testid="price-total">
-                      {totalPrice.toLocaleString('ru-RU')} ₽
+                      {totalPrice.toLocaleString('ru-RU')} р.
                     </span>
                   </div>
                   <Button 

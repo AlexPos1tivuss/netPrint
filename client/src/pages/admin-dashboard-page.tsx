@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
                 <p className="text-2xl font-bold">
-                  {ordersLoading ? "—" : `${(stats?.totalRevenue ?? 0).toLocaleString('ru-RU')} ₽`}
+                  {ordersLoading ? "—" : `${(stats?.totalRevenue ?? 0).toLocaleString('ru-RU')} р.`}
                 </p>
               </CardContent>
             </Card>
@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
                                 })}
                               </TableCell>
                               <TableCell className="text-right font-semibold whitespace-nowrap">
-                                {order.totalPrice.toLocaleString('ru-RU')} ₽
+                                {order.totalPrice.toLocaleString('ru-RU')} р.
                               </TableCell>
                               <TableCell>
                                 <Badge
@@ -414,7 +414,7 @@ export default function AdminDashboardPage() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-right font-semibold">
-                                  {product.basePrice.toLocaleString('ru-RU')} ₽
+                                  {product.basePrice.toLocaleString('ru-RU')} р.
                                 </TableCell>
                                 <TableCell className="text-right hidden md:table-cell">
                                   {productOrders.length}
@@ -489,7 +489,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <div>
                       <p className="text-muted-foreground">Итого</p>
-                      <p className="font-medium text-primary">{selectedOrder.totalPrice.toLocaleString('ru-RU')} ₽</p>
+                      <p className="font-medium text-primary">{selectedOrder.totalPrice.toLocaleString('ru-RU')} р.</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Источник фото</p>

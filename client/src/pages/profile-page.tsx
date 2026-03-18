@@ -74,12 +74,12 @@ export default function ProfilePage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold" data-testid="text-profile-title">Мой профиль</h1>
-              <p className="text-muted-foreground">
-                Пользователь: <span className="font-medium" data-testid="text-username">{user?.username}</span>
+              <div className="text-muted-foreground flex items-center gap-2 flex-wrap">
+                <span>Пользователь: <span className="font-medium" data-testid="text-username">{user?.username}</span></span>
                 {user?.isAdmin && (
-                  <Badge variant="secondary" className="ml-2">Администратор</Badge>
+                  <Badge variant="secondary">Администратор</Badge>
                 )}
-              </p>
+              </div>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export default function ProfilePage() {
                           <div className="flex items-center gap-2 font-semibold">
                             <span className="text-muted-foreground font-normal">Стоимость:</span>
                             <span className="text-primary" data-testid={`price-${order.id}`}>
-                              {order.totalPrice.toLocaleString('ru-RU')} ₽
+                              {order.totalPrice.toLocaleString('ru-RU')} р.
                             </span>
                           </div>
                         </div>

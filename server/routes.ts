@@ -1,9 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { z } from "zod";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertOrderSchema, updateProductTypeSchema } from "@shared/schema";
 import { generateSignedUploadUrl } from "./object-storage";
+
+const orderStatusSchema = z.enum(["pending", "processing", "ready", "delivered"]);
 
 function requireAuth(req: any, res: any, next: any) {
   if (!req.isAuthenticated()) {
@@ -114,6 +117,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).send("Неверные данные заказа");
       }
 
+      // Validate price is reasonable (client-side calc is trusted but guarded)
+      if (result.data.totalPrice < 0 || result.data.totalPrice > 10_000_000) {
+        return res.status(400).send("Недопустимая цена заказа");
+      }
+
       const order = await storage.createOrder(result.data);
       
       if (uploadedPhotoPaths && Array.isArray(uploadedPhotoPaths)) {
@@ -174,11 +182,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/orders/:id/status", requireAdmin, async (req, res) => {
     try {
       const { status } = req.body;
-      if (!status) {
-        return res.status(400).send("Статус не указан");
+      const statusResult = orderStatusSchema.safeParse(status);
+      if (!statusResult.success) {
+        return res.status(400).send("Недопустимое значение статуса. Допустимые: pending, processing, ready, delivered");
       }
 
-      const order = await storage.updateOrderStatus(req.params.id, status);
+      const order = await storage.updateOrderStatus(req.params.id, statusResult.data);
       if (!order) {
         return res.status(404).send("Заказ не найден");
       }

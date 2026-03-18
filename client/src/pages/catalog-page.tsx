@@ -201,7 +201,7 @@ export default function CatalogPage() {
                     <div>
                       <span className="text-sm text-muted-foreground">от </span>
                       <span className="text-xl font-bold text-primary" data-testid={`text-price-${product.name}`}>
-                        {product.basePrice} ₽
+                        {product.basePrice} р.
                       </span>
                     </div>
                     <div className="flex gap-2">
@@ -316,7 +316,7 @@ export default function CatalogPage() {
                 name="basePrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Цена (₽)</FormLabel>
+                    <FormLabel>Цена (р.)</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} data-testid="input-basePrice" />
                     </FormControl>

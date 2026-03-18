@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, Link } from "wouter";
+import { useLocation, Link, Redirect } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Upload, X, Check, ImageIcon } from "lucide-react";
@@ -62,8 +62,13 @@ export default function UploadPhotosPage() {
       const price = parseInt(params.get('price') || '0');
       
       const storedConfig = sessionStorage.getItem('productConfig');
-      const config = storedConfig ? JSON.parse(storedConfig) : {};
-      const productConfig = config.config || {};
+      let config: Record<string, unknown> = {};
+      try {
+        config = storedConfig ? JSON.parse(storedConfig) : {};
+      } catch {
+        config = {};
+      }
+      const productConfig = (config.config as Record<string, unknown>) || {};
       
       const res = await apiRequest("POST", "/api/orders", {
         productType,
@@ -144,6 +149,10 @@ export default function UploadPhotosPage() {
 
   const isProcessing = uploading || createOrderMutation.isPending;
 
+  if (!productType) {
+    return <Redirect to="/catalog" />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
@@ -157,7 +166,7 @@ export default function UploadPhotosPage() {
       <div className="container mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(`/product/${productType}`)} 
+          onClick={() => navigate(productType ? `/product/${productType}` : '/catalog')} 
           className="mb-6"
           data-testid="button-back"
         >
@@ -278,7 +287,7 @@ export default function UploadPhotosPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Стоимость продукта</span>
-                      <span className="font-medium">{price} ₽</span>
+                      <span className="font-medium">{price} р.</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Фотографий</span>
@@ -288,7 +297,7 @@ export default function UploadPhotosPage() {
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-lg font-bold mb-4">
                       <span>Итого</span>
-                      <span className="text-primary">{price} ₽</span>
+                      <span className="text-primary">{price} р.</span>
                     </div>
                     <Button 
                       className="w-full" 
