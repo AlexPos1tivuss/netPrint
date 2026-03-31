@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "O0P7G6D1RfLAVwBYjeTpP"
+uri = "file://README.md"
+type = "text"
+title = "README.md — Полная документация S-Printer"
