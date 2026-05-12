@@ -95,10 +95,11 @@ export default function UploadPhotosPage() {
       });
       navigate('/profile');
     },
-    onError: () => {
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Не удалось создать заказ. Попробуйте ещё раз.";
       toast({
-        title: "Ошибка",
-        description: "Не удалось создать заказ. Попробуйте ещё раз.",
+        title: "Ошибка создания заказа",
+        description: message,
         variant: "destructive",
       });
     },
@@ -114,30 +115,59 @@ export default function UploadPhotosPage() {
       return;
     }
 
+    const oversized = uploadedFiles.filter(({ file }) => file.size > 10 * 1024 * 1024);
+    if (oversized.length > 0) {
+      toast({
+        title: "Файл слишком большой",
+        description: `Превышен лимит 10 МБ: ${oversized.map(o => o.file.name).join(', ')}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const invalidType = uploadedFiles.filter(({ file }) => {
+      const t = (file.type || '').toLowerCase();
+      return t !== 'image/jpeg' && t !== 'image/png';
+    });
+    if (invalidType.length > 0) {
+      toast({
+        title: "Неподдерживаемый формат",
+        description: `Только JPG и PNG. Проблемные файлы: ${invalidType.map(o => o.file.name).join(', ')}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setUploading(true);
-    
+
     try {
       const uploadedPaths: string[] = [];
-      
+
       for (const { id, file } of uploadedFiles) {
         setFileStatuses(prev => ({ ...prev, [id]: 'uploading' }));
+        const contentType = file.type || 'image/jpeg';
         try {
           const urlResponse = await apiRequest("POST", "/api/upload/signed-url", {
             fileName: file.name,
-            contentType: file.type,
+            contentType,
           });
           const { signedUrl, filePath } = await urlResponse.json();
-          
+          if (!signedUrl || !filePath) {
+            throw new Error("Сервер не вернул ссылку для загрузки");
+          }
+
           const uploadRes = await fetch(signedUrl, {
             method: 'PUT',
-            headers: { 'Content-Type': file.type },
+            headers: { 'Content-Type': contentType },
             body: file,
           });
 
           if (!uploadRes.ok) {
-            throw new Error(`Upload failed for ${file.name}`);
+            const detail = await uploadRes.text().catch(() => '');
+            console.error(`PUT to GCS failed for ${file.name}:`, uploadRes.status, detail);
+            throw new Error(`Хранилище отклонило файл «${file.name}» (${uploadRes.status})`);
           }
-          
+
           uploadedPaths.push(filePath);
           setFileStatuses(prev => ({ ...prev, [id]: 'done' }));
         } catch (err) {
@@ -145,13 +175,14 @@ export default function UploadPhotosPage() {
           throw err;
         }
       }
-      
+
       createOrderMutation.mutate(uploadedPaths);
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Неизвестная ошибка';
       console.error("Upload error:", error);
       toast({
         title: "Ошибка загрузки",
-        description: "Не удалось загрузить фотографии. Проверьте подключение и попробуйте снова.",
+        description: message,
         variant: "destructive",
       });
     } finally {
