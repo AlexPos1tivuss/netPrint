@@ -6,3 +6,9 @@ id = "O0P7G6D1RfLAVwBYjeTpP"
 uri = "file://README.md"
 type = "text"
 title = "README.md — Полная документация S-Printer"
+
+[[outputs]]
+id = "IgRBj9qVoxUetXTlpmMyW"
+uri = "file://output/ДП_Карамзина_переработка.docx"
+type = "word_document"
+title = "ДП Карамзина — переработанные разделы + список источников"
