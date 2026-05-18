@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, Redirect } from "wouter";
-import { Camera, Package, Calendar, Users, Shield, Clock, Award, MapPin } from "lucide-react";
+import { Camera, Package, Calendar, Users, Shield, Clock, Award, MapPin, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import sprinterLogo from "@assets/sprinter-logo.svg";
 import photoalbumImage from "@assets/generated_images/Premium_hardcover_photo_album_6ecc0eee.png";
 import photosImage from "@assets/generated_images/Stack_glossy_photo_prints_3ba30edf.png";
@@ -71,7 +72,14 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <img src={sprinterLogo} alt="S-Printer" className="h-8" />
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center"
+              data-testid="logo-home"
+              aria-label="S-Printer — наверх"
+            >
+              <img src={sprinterLogo} alt="S-Printer" className="h-8" />
+            </button>
             <nav className="hidden md:flex gap-6">
               <button 
                 onClick={() => scrollToSection('services')}
@@ -97,11 +105,48 @@ export default function HomePage() {
             </nav>
           </div>
           
-          <Link href="/auth">
-            <Button variant="default" data-testid="button-login">
-              Войти
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/auth">
+              <Button variant="default" data-testid="button-login">
+                Войти
+              </Button>
+            </Link>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden" data-testid="button-mobile-menu" aria-label="Меню">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72">
+                <nav className="flex flex-col gap-2 mt-8">
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => scrollToSection('services')}
+                    data-testid="nav-services-mobile"
+                  >
+                    Услуги
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => scrollToSection('features')}
+                    data-testid="nav-features-mobile"
+                  >
+                    Преимущества
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => scrollToSection('faq')}
+                    data-testid="nav-faq-mobile"
+                  >
+                    FAQ
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </header>
 

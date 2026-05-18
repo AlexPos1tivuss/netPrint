@@ -258,12 +258,11 @@ export default function CatalogPage() {
                   <Button 
                     size="lg"
                     onClick={() => {
-                      sessionStorage.setItem('productConfig', JSON.stringify({
-                        config: {},
-                        product: 'photoalbum',
-                        price: 1500
-                      }));
-                      navigate('/photographer?product=photoalbum&price=1500');
+                      toast({
+                        title: "Выберите продукт",
+                        description: "Сначала выберите тип продукции выше — на странице настройки можно включить услугу фотографа.",
+                      });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     data-testid="button-hire-photographer"
                   >
