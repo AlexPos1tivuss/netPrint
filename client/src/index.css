@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Official Belarusian ruble symbol — National Bank of the Republic of Belarus font.
+   The font is loaded from nbrb.by; if it fails, the literal "Br" remains visible. */
+@font-face {
+  font-family: 'NBRB-BYN';
+  src: url('https://www.nbrb.by/Content/Pages/byn-ico/BYN-2.woff2') format('woff2'),
+       url('https://www.nbrb.by/Content/Pages/byn-ico/BYN-2.woff') format('woff'),
+       url('https://www.nbrb.by/Content/Pages/byn-ico/BYN-2.ttf') format('truetype');
+  font-display: swap;
+  font-weight: 400 900;
+  font-style: normal;
+}
+
+.byn-symbol {
+  font-family: 'NBRB-BYN', system-ui, -apple-system, sans-serif;
+  font-feature-settings: normal;
+  font-style: normal;
+  margin-left: 0.15em;
+  display: inline-block;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);

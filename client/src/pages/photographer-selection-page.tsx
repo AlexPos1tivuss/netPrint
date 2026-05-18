@@ -29,7 +29,7 @@ export default function PhotographerSelectionPage() {
 
   const params = new URLSearchParams(window.location.search);
   const productType = params.get('product') || '';
-  const productPrice = parseInt(params.get('price') || '0');
+  const productPrice = parseFloat(params.get('price') || '0');
 
   const [selectedPhotographer, setSelectedPhotographer] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -219,7 +219,7 @@ export default function PhotographerSelectionPage() {
                                     <span className="font-medium">{photographer.rating}/5</span>
                                   </div>
                                   <Badge variant="secondary">
-                                    {photographer.pricePerHour.toLocaleString('ru-RU')} р./час
+                                    {photographer.pricePerHour.toLocaleString('be-BY')}<span className="byn-symbol"> Br</span>/час
                                   </Badge>
                                 </div>
                               </div>
@@ -334,12 +334,12 @@ export default function PhotographerSelectionPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Продукт</span>
-                    <span className="font-medium">{productPrice} р.</span>
+                    <span className="font-medium">{Number(productPrice).toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span></span>
                   </div>
                   {selectedPhotographerData && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Фотограф (1ч)</span>
-                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('ru-RU')} р.</span>
+                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('be-BY')}<span className="byn-symbol"> Br</span></span>
                     </div>
                   )}
                 </div>
@@ -370,7 +370,7 @@ export default function PhotographerSelectionPage() {
                   <div className="flex justify-between text-lg font-bold mb-4">
                     <span>Итого</span>
                     <span className="text-primary" data-testid="price-total">
-                      {totalPrice.toLocaleString('ru-RU')} р.
+                      {totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span>
                     </span>
                   </div>
                   <Button 

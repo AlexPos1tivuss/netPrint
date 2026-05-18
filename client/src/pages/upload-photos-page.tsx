@@ -66,7 +66,7 @@ export default function UploadPhotosPage() {
     mutationFn: async (uploadedPaths: string[]) => {
       const params = new URLSearchParams(window.location.search);
       const productType = params.get('product') || '';
-      const price = parseInt(params.get('price') || '0');
+      const price = parseFloat(params.get('price') || '0');
       
       const storedConfig = sessionStorage.getItem('productConfig');
       let config: Record<string, unknown> = {};
@@ -364,7 +364,7 @@ export default function UploadPhotosPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Стоимость продукта</span>
-                      <span className="font-medium">{price} р.</span>
+                      <span className="font-medium">{Number(price).toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span></span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Фотографий</span>
@@ -374,7 +374,7 @@ export default function UploadPhotosPage() {
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-lg font-bold mb-4">
                       <span>Итого</span>
-                      <span className="text-primary">{price} р.</span>
+                      <span className="text-primary">{Number(price).toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span></span>
                     </div>
                     <Button 
                       className="w-full" 
