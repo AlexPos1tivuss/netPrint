@@ -202,15 +202,15 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="small" id="size-small" data-testid="radio-size-small" />
-                        <Label htmlFor="size-small" className="font-normal cursor-pointer">Маленький (15×15 см) — 30 Br</Label>
+                        <Label htmlFor="size-small" className="font-normal cursor-pointer">Маленький (15×15 см) — 30 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="medium" id="size-medium" data-testid="radio-size-medium" />
-                        <Label htmlFor="size-medium" className="font-normal cursor-pointer">Средний (20×20 см) — 40 Br</Label>
+                        <Label htmlFor="size-medium" className="font-normal cursor-pointer">Средний (20×20 см) — 40 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="large" id="size-large" data-testid="radio-size-large" />
-                        <Label htmlFor="size-large" className="font-normal cursor-pointer">Большой (30×30 см) — 55 Br</Label>
+                        <Label htmlFor="size-large" className="font-normal cursor-pointer">Большой (30×30 см) — 55 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -225,15 +225,15 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="soft" id="cover-soft" data-testid="radio-cover-soft" />
-                        <Label htmlFor="cover-soft" className="font-normal cursor-pointer">Мягкая — 0 Br</Label>
+                        <Label htmlFor="cover-soft" className="font-normal cursor-pointer">Мягкая — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="hard" id="cover-hard" data-testid="radio-cover-hard" />
-                        <Label htmlFor="cover-hard" className="font-normal cursor-pointer">Твердая — +5 Br</Label>
+                        <Label htmlFor="cover-hard" className="font-normal cursor-pointer">Твердая — +5 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="premium" id="cover-premium" data-testid="radio-cover-premium" />
-                        <Label htmlFor="cover-premium" className="font-normal cursor-pointer">Премиум (кожа) — +20 Br</Label>
+                        <Label htmlFor="cover-premium" className="font-normal cursor-pointer">Премиум (кожа) — +20 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -241,7 +241,7 @@ export default function ProductConfigPage() {
                   <Separator />
 
                   <div className="space-y-3">
-                    <Label htmlFor="pages" className="font-medium">Количество страниц (1 Br/страница)</Label>
+                    <Label htmlFor="pages" className="font-medium">Количество страниц (1 BYN/страница)</Label>
                     <Select
                       value={photoalbumConfig.pages.toString()}
                       onValueChange={(v) => setPhotoalbumConfig(prev => ({...prev, pages: parseInt(v)}))}
@@ -268,11 +268,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="matte" id="paper-matte" data-testid="radio-paper-matte" />
-                        <Label htmlFor="paper-matte" className="font-normal cursor-pointer">Матовая — 0 Br</Label>
+                        <Label htmlFor="paper-matte" className="font-normal cursor-pointer">Матовая — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="glossy" id="paper-glossy" data-testid="radio-paper-glossy" />
-                        <Label htmlFor="paper-glossy" className="font-normal cursor-pointer">Глянцевая — +5 Br</Label>
+                        <Label htmlFor="paper-glossy" className="font-normal cursor-pointer">Глянцевая — +5 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -294,15 +294,15 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="10x15" id="photo-10x15" data-testid="radio-size-10x15" />
-                        <Label htmlFor="photo-10x15" className="font-normal cursor-pointer">10×15 см — 0,30 Br/шт</Label>
+                        <Label htmlFor="photo-10x15" className="font-normal cursor-pointer">10×15 см — 0,30 BYN/шт</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="15x20" id="photo-15x20" data-testid="radio-size-15x20" />
-                        <Label htmlFor="photo-15x20" className="font-normal cursor-pointer">15×20 см — 0,50 Br/шт</Label>
+                        <Label htmlFor="photo-15x20" className="font-normal cursor-pointer">15×20 см — 0,50 BYN/шт</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="20x30" id="photo-20x30" data-testid="radio-size-20x30" />
-                        <Label htmlFor="photo-20x30" className="font-normal cursor-pointer">20×30 см — 0,90 Br/шт</Label>
+                        <Label htmlFor="photo-20x30" className="font-normal cursor-pointer">20×30 см — 0,90 BYN/шт</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -338,11 +338,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="matte" id="photo-paper-matte" data-testid="radio-paper-matte" />
-                        <Label htmlFor="photo-paper-matte" className="font-normal cursor-pointer">Матовая — 0 Br</Label>
+                        <Label htmlFor="photo-paper-matte" className="font-normal cursor-pointer">Матовая — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="glossy" id="photo-paper-glossy" data-testid="radio-paper-glossy" />
-                        <Label htmlFor="photo-paper-glossy" className="font-normal cursor-pointer">Глянцевая — +0,10 Br/шт</Label>
+                        <Label htmlFor="photo-paper-glossy" className="font-normal cursor-pointer">Глянцевая — +0,10 BYN/шт</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -357,11 +357,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="no" id="border-no" data-testid="radio-border-no" />
-                        <Label htmlFor="border-no" className="font-normal cursor-pointer">Без рамки — 0 Br</Label>
+                        <Label htmlFor="border-no" className="font-normal cursor-pointer">Без рамки — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="yes" id="border-yes" data-testid="radio-border-yes" />
-                        <Label htmlFor="border-yes" className="font-normal cursor-pointer">С белой рамкой — +0,05 Br/шт</Label>
+                        <Label htmlFor="border-yes" className="font-normal cursor-pointer">С белой рамкой — +0,05 BYN/шт</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -383,11 +383,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="desk" id="type-desk" data-testid="radio-type-desk" />
-                        <Label htmlFor="type-desk" className="font-normal cursor-pointer">Настольный — 15 Br</Label>
+                        <Label htmlFor="type-desk" className="font-normal cursor-pointer">Настольный — 15 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="wall" id="type-wall" data-testid="radio-type-wall" />
-                        <Label htmlFor="type-wall" className="font-normal cursor-pointer">Настенный — 20 Br</Label>
+                        <Label htmlFor="type-wall" className="font-normal cursor-pointer">Настенный — 20 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -402,11 +402,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="A4" id="size-a4" data-testid="radio-size-a4" />
-                        <Label htmlFor="size-a4" className="font-normal cursor-pointer">A4 — 0 Br</Label>
+                        <Label htmlFor="size-a4" className="font-normal cursor-pointer">A4 — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="A3" id="size-a3" data-testid="radio-size-a3" />
-                        <Label htmlFor="size-a3" className="font-normal cursor-pointer">A3 — +5 Br</Label>
+                        <Label htmlFor="size-a3" className="font-normal cursor-pointer">A3 — +5 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -421,11 +421,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="6" id="months-6" data-testid="radio-months-6" />
-                        <Label htmlFor="months-6" className="font-normal cursor-pointer">6 месяцев — 0 Br</Label>
+                        <Label htmlFor="months-6" className="font-normal cursor-pointer">6 месяцев — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="12" id="months-12" data-testid="radio-months-12" />
-                        <Label htmlFor="months-12" className="font-normal cursor-pointer">12 месяцев — +5 Br</Label>
+                        <Label htmlFor="months-12" className="font-normal cursor-pointer">12 месяцев — +5 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -440,11 +440,11 @@ export default function ProductConfigPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="glued" id="binding-glued" data-testid="radio-binding-glued" />
-                        <Label htmlFor="binding-glued" className="font-normal cursor-pointer">Клееный — 0 Br</Label>
+                        <Label htmlFor="binding-glued" className="font-normal cursor-pointer">Клееный — 0 BYN</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="spiral" id="binding-spiral" data-testid="radio-binding-spiral" />
-                        <Label htmlFor="binding-spiral" className="font-normal cursor-pointer">Спираль — +3 Br</Label>
+                        <Label htmlFor="binding-spiral" className="font-normal cursor-pointer">Спираль — +3 BYN</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -478,7 +478,7 @@ export default function ProductConfigPage() {
                     <p className="text-sm text-muted-foreground">
                       Закажите профессиональную фотосессию с выбором фотографа, места и времени
                     </p>
-                    <Badge variant="secondary" className="mt-2">Доп. стоимость от 70 Br/час</Badge>
+                    <Badge variant="secondary" className="mt-2">Доп. стоимость от 70 BYN/час</Badge>
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -506,7 +506,7 @@ export default function ProductConfigPage() {
                   <span>Итого</span>
                   <span className="text-primary" data-testid="price-total">
                     {price.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    <span className="byn-symbol"> Br</span>
+                    <span className="byn-symbol"> BYN</span>
                   </span>
                 </div>
                 {photoSource === 'photographer' && (

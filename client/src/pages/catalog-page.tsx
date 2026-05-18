@@ -210,7 +210,7 @@ export default function CatalogPage() {
                       <span className="text-sm text-muted-foreground">от </span>
                       <span className="text-xl font-bold text-primary" data-testid={`text-price-${product.name}`}>
                         {product.basePrice.toLocaleString('be-BY')}
-                        <span className="byn-symbol"> Br</span>
+                        <span className="byn-symbol"> BYN</span>
                       </span>
                     </div>
                     <div className="flex gap-2">

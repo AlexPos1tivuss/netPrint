@@ -153,7 +153,7 @@ export default function AdminDashboardPage() {
                   {ordersLoading ? "—" : (
                     <>
                       {(stats?.totalRevenue ?? 0).toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      <span className="byn-symbol"> Br</span>
+                      <span className="byn-symbol"> BYN</span>
                     </>
                   )}
                 </p>
@@ -263,7 +263,7 @@ export default function AdminDashboardPage() {
                                 })}
                               </TableCell>
                               <TableCell className="text-right font-semibold whitespace-nowrap">
-                                {order.totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span>
+                                {order.totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> BYN</span>
                               </TableCell>
                               <TableCell>
                                 <Badge
@@ -425,7 +425,7 @@ export default function AdminDashboardPage() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-right font-semibold">
-                                  {product.basePrice.toLocaleString('be-BY')}<span className="byn-symbol"> Br</span>
+                                  {product.basePrice.toLocaleString('be-BY')}<span className="byn-symbol"> BYN</span>
                                 </TableCell>
                                 <TableCell className="text-right hidden md:table-cell">
                                   {productOrders.length}
@@ -500,7 +500,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <div>
                       <p className="text-muted-foreground">Итого</p>
-                      <p className="font-medium text-primary">{selectedOrder.totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span></p>
+                      <p className="font-medium text-primary">{selectedOrder.totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> BYN</span></p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Источник фото</p>

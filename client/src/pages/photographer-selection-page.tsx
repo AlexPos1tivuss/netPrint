@@ -219,7 +219,7 @@ export default function PhotographerSelectionPage() {
                                     <span className="font-medium">{photographer.rating}/5</span>
                                   </div>
                                   <Badge variant="secondary">
-                                    {photographer.pricePerHour.toLocaleString('be-BY')}<span className="byn-symbol"> Br</span>/час
+                                    {photographer.pricePerHour.toLocaleString('be-BY')}<span className="byn-symbol"> BYN</span>/час
                                   </Badge>
                                 </div>
                               </div>
@@ -334,12 +334,12 @@ export default function PhotographerSelectionPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Продукт</span>
-                    <span className="font-medium">{Number(productPrice).toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span></span>
+                    <span className="font-medium">{Number(productPrice).toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> BYN</span></span>
                   </div>
                   {selectedPhotographerData && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Фотограф (1ч)</span>
-                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('be-BY')}<span className="byn-symbol"> Br</span></span>
+                      <span className="font-medium">{selectedPhotographerData.pricePerHour.toLocaleString('be-BY')}<span className="byn-symbol"> BYN</span></span>
                     </div>
                   )}
                 </div>
@@ -370,7 +370,7 @@ export default function PhotographerSelectionPage() {
                   <div className="flex justify-between text-lg font-bold mb-4">
                     <span>Итого</span>
                     <span className="text-primary" data-testid="price-total">
-                      {totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span>
+                      {totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> BYN</span>
                     </span>
                   </div>
                   <Button 

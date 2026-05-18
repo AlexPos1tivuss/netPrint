@@ -12,7 +12,7 @@ export function Byn({ amount, fraction = 2, className }: BynProps) {
   return (
     <span className={className} data-testid="price-byn">
       {formatted}
-      <span className="byn-symbol" aria-label="белорусских рублей"> Br</span>
+      <span className="byn-symbol" aria-label="белорусских рублей"> BYN</span>
     </span>
   );
 }
@@ -21,5 +21,5 @@ export function formatByn(amount: number, fraction: 0 | 2 = 2): string {
   return `${amount.toLocaleString('be-BY', {
     minimumFractionDigits: fraction,
     maximumFractionDigits: fraction,
-  })} Br`;
+  })} BYN`;
 }

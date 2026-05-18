@@ -223,7 +223,7 @@ export default function ProfilePage() {
                           <div className="flex items-center gap-2 font-semibold">
                             <span className="text-muted-foreground font-normal">Стоимость:</span>
                             <span className="text-primary" data-testid={`price-${order.id}`}>
-                              {order.totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> Br</span>
+                              {order.totalPrice.toLocaleString('be-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="byn-symbol"> BYN</span>
                             </span>
                           </div>
                         </div>
